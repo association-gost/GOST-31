@@ -1,6 +1,6 @@
 // Intro de Générique : une panthère dessinée dans le style du logo (images rendues : silhouette claire,
-// traits de séparation) marche depuis la gauche ; à l'arrêt sa tête devient la tête de face du logo,
-// elle rugit, se couche, puis fondu vers la panthère du logo et le logo complet. Pas de son.
+// traits de séparation) marche depuis la gauche ; à l'arrêt elle tourne la tête (la tête de face du logo),
+// elle se couche, puis fondu vers la panthère du logo et le logo complet. Pas de son, pas de rugissement.
 // La « caméra » est le viewBox du SVG.
 window.Panthere = (function () {
   var NS = 'http://www.w3.org/2000/svg';
@@ -101,6 +101,8 @@ window.Panthere = (function () {
     var yeux = el('g', { 'class': 'pt-yeux', opacity: 0, filter: 'url(#' + p + '-lueur)' }, tete);
     el('ellipse', { cx: 409, cy: 45, rx: 11, ry: 8, fill: o.yeux || '#ffd66b' }, yeux);
     el('ellipse', { cx: 447, cy: 45, rx: 13, ry: 7, fill: o.yeux || '#ffd66b' }, yeux);
+    // Cou de raccord : relie la tête de face au cou de la panthère dessinée.
+    el('path', { 'class': 'pt-cou', d: 'M385 95L399 116L421 124L446 120L478 106L495 92C500 120 480 150 448 165C420 176 380 174 360 156C348 140 352 115 368 100Z', fill: o.couleurCou || '#eceef1' }, tete);
     morceau(o.src, p + '-tete', tete, 'pt-tete-img');
     var gueule = el('g', { 'class': 'pt-gueule' }, tete);
     var croc = '#f3efe4';
@@ -156,9 +158,6 @@ window.Panthere = (function () {
     img.setAttribute('width', arrondi(Wd)); img.setAttribute('height', arrondi(Hd));
     function decalTete(e) { return [A[0] + e[1] * s - COU[0], A[1] + e[2] * s - COU[1]]; }
     var dt = decalTete(D.d[0]);
-    var hx = 447 + dt[0], hy = 70 + dt[1];
-    var cadreTete = arrondi(hx - 95) + ' ' + arrondi(hy - 82) + ' 190 186';
-    var cadreRugit = arrondi(hx - 115) + ' ' + arrondi(hy - 104) + ' 230 225';
     var haut = Math.min(A[1], dt[1] - 5);
     var cadreMarche = arrondi(A[0] - 80) + ' ' + arrondi(haut - 70) + ' ' + arrondi(Wd + 160) + ' ' + arrondi(262 - haut + 130);
 
@@ -192,30 +191,15 @@ window.Panthere = (function () {
     tl.to(vue, { decal: 0, duration: 1.7, ease: 'power2.out', onUpdate: marche }, 0);
 
     // 2. Elle s'arrête et tourne la tête vers nous : la tête de profil laisse place à la tête du logo.
+    //    Pas de rugissement, pas de zoom : elle se tourne, puis se pose.
     var Ta = dureeMarche + 0.1;
     tl.addLabel('tete', Ta);
     tl.call(function () { img.setAttribute('href', nomImage(base, 'd', 0)); gsap.set(r.dessin, { x: 0 }); }, null, Ta);
     tl.fromTo(r.tete, { scaleX: 0 }, { scaleX: 1, duration: 0.32, ease: 'back.out(1.8)', immediateRender: false }, Ta);
-    tl.to(r.yeux, { keyframes: [{ opacity: 1, duration: 0.06 }, { opacity: 0.25, duration: 0.07 }, { opacity: 1, duration: 0.12 }] }, Ta + 0.4);
-    tl.to(r.svg, { attr: { viewBox: cadreTete }, duration: 0.85, ease: 'expo.inOut' }, Ta + 0.45);
-
-    // 3. Le rugissement : la gueule s'ouvre, l'écran tremble.
-    var T = Ta + 1.4;
-    tl.addLabel('rugit', T);
-    tl.to(r.gueule, { scaleY: 1, duration: 0.16, ease: 'back.out(2.2)' }, T);
-    tl.to(r.tete, { rotation: -3, transformOrigin: '50% 95%', duration: 0.2, ease: 'power3.out' }, T);
-    tl.to(r.svg, { attr: { viewBox: cadreRugit }, duration: 1.6, ease: 'power1.out' }, T);
-    tl.to(r.svg, { x: 'random(-16,16)', y: 'random(-11,11)', duration: 0.05, repeat: 25, repeatRefresh: true, ease: 'none' }, T + 0.05);
-    tl.to(r.svg, { x: 0, y: 0, duration: 0.12 }, T + 1.36);
-    if (o.surRugit) o.surRugit(tl, T);
-
-    // 4. Elle referme la gueule et se couche ; la caméra recule sur le cadre du logo.
-    var R = T + 1.6;
+    // 3. Elle se couche ; la caméra s'élargit doucement sur le cadre du logo.
+    var R = Ta + 0.95;
     tl.addLabel('couche', R);
-    tl.to(r.gueule, { scaleY: 0, duration: 0.35, ease: 'power2.in' }, R);
-    tl.to(r.tete, { rotation: 0, duration: 0.5, ease: 'power2.inOut' }, R);
-    tl.to(r.yeux, { opacity: 0, duration: 0.8 }, R + 0.5);
-    tl.to(r.svg, { attr: { viewBox: cadreFinal }, duration: 1.4, ease: 'expo.inOut' }, R + 0.1);
+    tl.to(r.svg, { attr: { viewBox: cadreFinal }, duration: 2.0, ease: 'power2.inOut' }, R);
     function couche() {
       var k = Math.min(D.c.length - 1, Math.round(vue.c)), e = D.c[k], t2 = decalTete(e);
       img.setAttribute('href', nomImage(base, 'c', k));

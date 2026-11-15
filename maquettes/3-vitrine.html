@@ -162,6 +162,8 @@ a { color: inherit; text-underline-offset: .2em; }
   .bon > div + div { border-left: 0; border-top: 3px solid var(--encre); }
 }
 </style>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+<script>window.__p3 = new Promise(function (ok) { window.__p3ok = ok; if (location.protocol === 'file:') ok(false); });</script>
 </head>
 <body>
 <div class="porte" id="porte">
@@ -230,6 +232,7 @@ a { color: inherit; text-underline-offset: .2em; }
     </div>
     <footer class="pied">
       <span>© GOST 31 · Une question ? Écrivez-nous à l’adresse ci-dessus.</span>
+      <span>Panthère 3D d’après « <a href="https://sketchfab.com/3d-models/panther-semi-low-poly-sculpt-23ae433d4ba74ca49a580d6740f4cf04">Panther semi low poly sculpt</a> » de uv15o6, licence <a href="https://creativecommons.org/licenses/by/4.0/deed.fr">CC BY 4.0</a>, animée pour GOST 31.</span>
       <button type="button" id="revoir">Revoir l’intro</button>
     </footer>
   </section>
@@ -343,7 +346,9 @@ a { color: inherit; text-underline-offset: .2em; }
   var cadreFinal = paysage() ? '-60 -40 1600 773' : '-60 -40 820 1180';
   var rig = Panthere.creer(document.getElementById('scene'), { src: 'assets/logo-hd.png', ondes: '#0b0d10', prefixe: 'c' });
   var texte = document.getElementById('ouverture-texte');
-  var tl = Panthere.intro(rig, {
+  Son.charger({ pas: 'assets/son/pas.mp3', grondement: 'assets/son/rugissement.mp3', rugissement: 'assets/son/rugissement-reel.mp3' });
+  var tl = null;
+  var optsIntro = {
     cadreFinal: cadreFinal,
     surRugit: function (tl, t) {
       tl.to(traits, { strokeDashoffset: 0, duration: 0.9, ease: 'power2.out', stagger: { each: 0.025, from: 'center' } }, t + 0.1);
@@ -352,11 +357,11 @@ a { color: inherit; text-underline-offset: .2em; }
     surLogo: function (tl, t) {
       tl.fromTo(texte, { opacity: 0, x: 30 }, { opacity: 1, x: 0, duration: 0.9, ease: 'expo.out' }, t + 0.2);
     }
-  });
-  window.__tl = tl;
+  };
+  function construire() { tl = Panthere.intro(rig, Object.assign({ troisD: window.Panthere3D }, optsIntro)); window.__tl = tl; return tl; }
 
   function ouvrirSite() { document.getElementById('barre').classList.add('visible'); lenis.start(); ScrollTrigger.refresh(); }
-  Panthere.porte({ porte: document.getElementById('porte'), entrer: document.getElementById('entrer'), muet: document.getElementById('entrer-muet'), passer: document.getElementById('passer'), tl: tl, apres: ouvrirSite });
+  Panthere.porte({ porte: document.getElementById('porte'), entrer: document.getElementById('entrer'), muet: document.getElementById('entrer-muet'), passer: document.getElementById('passer'), construire: construire, attendre: window.__p3, apres: ouvrirSite });
   document.getElementById('revoir').addEventListener('click', function () {
     lenis.scrollTo(0, { immediate: true }); lenis.stop();
     tl.eventCallback('onComplete', function () { lenis.start(); }); tl.play(0);
@@ -381,6 +386,10 @@ a { color: inherit; text-underline-offset: .2em; }
     ScrollTrigger.create({ trigger: et, start: 'top 55%', end: 'bottom 55%', onToggle: function (s) { if (lien) lien.setAttribute('aria-current', s.isActive ? 'true' : 'false'); } });
   });
 })();
+</script>
+<script type="module">
+import './shared/panthere3d.js';
+if (location.protocol !== 'file:') window.Panthere3D.charger(document.getElementById('scene'), 'assets/panthere.glb', { ciel: 1.5, cle: 2.4, contre: 1.8 }).then(function () { window.__p3ok(true); }, function () { window.__p3ok(false); });
 </script>
 </body>
 </html>

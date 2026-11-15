@@ -186,7 +186,37 @@ window.Son = (function () {
     o.connect(g); sortie(g, 0.8); o.start(t); o.stop(t + 0.7);
   }
 
+  // Vrais enregistrements (pas, grondement, rugissement), lus avec des éléments <audio>
+  // pour fonctionner aussi en ouvrant la page en local.
+  var fichiers = {};
+  function charger(liste) {
+    Object.keys(liste).forEach(function (nom) {
+      var a = new Audio(); a.preload = 'auto'; a.src = liste[nom]; fichiers[nom] = a;
+    });
+  }
+  function jouer(nom, o) {
+    o = o || {};
+    var a = fichiers[nom]; if (!ctx || !a) return false;
+    try {
+      a.pause(); a.currentTime = o.depuis || 0; a.volume = o.volume == null ? 1 : o.volume;
+      var p = a.play(); if (p && p.catch) p.catch(function () {});
+      if (o.duree) setTimeout(function () { estomper(nom, o.fondu || 0.6); }, o.duree * 1000);
+    } catch (e) { return false; }
+    return true;
+  }
+  function estomper(nom, sec) {
+    var a = fichiers[nom]; if (!a || a.paused) return;
+    var v0 = a.volume, t0 = performance.now(), d = (sec || 0.6) * 1000;
+    (function pas() {
+      var k = Math.min(1, (performance.now() - t0) / d);
+      a.volume = Math.max(0, v0 * (1 - k));
+      if (k < 1) requestAnimationFrame(pas); else a.pause();
+    })();
+  }
+  function aFichier(nom) { return !!fichiers[nom]; }
+
   function couper() {
+    Object.keys(fichiers).forEach(function (n) { try { fichiers[n].pause(); } catch (e) {} });
     if (!ctx) return;
     var t = ctx.currentTime;
     maitre.gain.cancelScheduledValues(t);
@@ -196,5 +226,6 @@ window.Son = (function () {
   }
 
   return { init: init, ambiance: ambiance, finAmbiance: finAmbiance, pas: pas, rugissement: rugissement,
-    impact: impact, jets: jets, braam: braam, eclat: eclat, couper: couper };
+    impact: impact, jets: jets, braam: braam, eclat: eclat, couper: couper,
+    charger: charger, jouer: jouer, estomper: estomper, aFichier: aFichier };
 })();

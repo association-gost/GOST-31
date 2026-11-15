@@ -179,10 +179,102 @@ window.Panthere = (function () {
     return tl;
   }
 
+  // Position à l'écran (relative à `ref`) de la panthère du logo dans le cadre final.
+  function ciblesLogo(r, cadre, ref) {
+    var avant = r.svg.getAttribute('viewBox');
+    r.svg.setAttribute('viewBox', cadre);
+    var m = r.svg.getScreenCTM(), b = ref.getBoundingClientRect();
+    var pt = r.svg.createSVGPoint();
+    function ecran(x, y) { pt.x = x; pt.y = y; var q = pt.matrixTransform(m); return { x: q.x - b.left, y: q.y - b.top }; }
+    var haut = ecran(452, 0), bas = ecran(452, 262);
+    r.svg.setAttribute('viewBox', avant);
+    return { teteX: haut.x, haut: haut.y, bas: bas.y };
+  }
+
+  // La version 3D : elle marche depuis la gauche, gros plan, rugit face à nous, se couche,
+  // puis fondu de la panthère 3D vers la panthère du logo, et le logo se construit.
+  function intro3D(r, o) {
+    var P3 = o.troisD, cadreFinal = o.cadreFinal || CADRES.final, canvas = P3.canvas;
+    var L = r.lettres, tl = gsap.timeline({ paused: true });
+    var hautes = [L.R, L.A, L.i, L.D];
+    gsap.set(r.svg, { attr: { viewBox: cadreFinal }, x: 0, y: 0 });
+    gsap.set(r.panthere, { x: 0, opacity: 0 });
+    gsap.set([r.pose, r.tete], { x: 0, y: 0, rotation: 0 });
+    r.flou.setAttribute('stdDeviation', '0 0');
+    gsap.set(hautes, { y: 300, opacity: 0 });
+    gsap.set(L.croix, { rotation: -200, scale: 0.3, opacity: 0, svgOrigin: '57 420' });
+    gsap.set(r.barres.bleu, { scaleX: 0, svgOrigin: '250 651' });
+    gsap.set(r.barres.rouge, { scaleX: 0, svgOrigin: '455 651' });
+    gsap.set([r.gueule], { scaleY: 0, svgOrigin: '421 102' });
+    gsap.set([r.yeux, r.logoFinal, r.ondes], { opacity: 0 });
+    gsap.set(canvas, { opacity: 1, x: 0, y: 0 });
+
+    var vue = { t: 0, decal: -2.4, tete: 0, cadre: 0 };
+    function caler() { P3.caler(ciblesLogo(r, cadreFinal, canvas)); P3.rendre(vue); }
+    caler();
+    if (!r._redim) { r._redim = true; window.addEventListener('resize', function () { if (r._caler) r._caler(); }); }
+    r._caler = caler;
+    tl.eventCallback('onUpdate', function () { P3.rendre(vue); });
+
+    // 1. La marche, depuis la gauche.
+    tl.addLabel('arrivee', 0);
+    tl.to(vue, { t: P3.DUREE, duration: P3.DUREE, ease: 'none' }, 0);
+    tl.to(vue, { decal: 0, duration: 1.8, ease: 'power2.out' }, 0);
+    tl.call(Son.ambiance, null, 0);
+    tl.call(function () { if (!Son.jouer('pas', { volume: 0.9 })) [0, 0.55, 1.1, 1.65, 2.2, 2.75].forEach(function (d) { setTimeout(function () { Son.pas(0.7); }, d * 1000); }); }, null, 0.05);
+    tl.call(Son.estomper, ['pas', 0.7], P3.T.arret - 0.2);
+
+    // 2. Elle s'arrête et tourne la tête vers nous : gros plan, grondement.
+    tl.addLabel('yeux', P3.T.arret);
+    tl.call(function () { Son.jouer('grondement', { depuis: 0.5, volume: 0.7, duree: 1.1, fondu: 0.5 }); }, null, P3.T.arret + 0.05);
+    tl.to(vue, { tete: 1, duration: 0.9, ease: 'expo.inOut' }, P3.T.arret + 0.25);
+
+    // 3. Le rugissement : la gueule s'ouvre en grand, l'écran tremble.
+    var T = P3.T.ouverte - 0.15;
+    tl.addLabel('rugit', T);
+    tl.call(function () { if (!Son.jouer('rugissement', { depuis: 3.75, volume: 1, duree: 1.7, fondu: 0.9 })) Son.rugissement(); }, null, T - 0.1);
+    tl.to([r.svg, canvas], { x: 'random(-16,16)', y: 'random(-11,11)', duration: 0.05, repeat: 25, repeatRefresh: true, ease: 'none' }, T + 0.06);
+    tl.to([r.svg, canvas], { x: 0, y: 0, duration: 0.12 }, T + 1.38);
+    if (o.surRugit) o.surRugit(tl, T);
+
+    // 4. Elle se couche, la caméra recule sur le cadre du logo.
+    tl.addLabel('recul', P3.T.couche);
+    tl.to(vue, { tete: 0, cadre: 1, duration: 1.6, ease: 'expo.inOut' }, P3.T.couche - 0.1);
+    tl.call(Son.finAmbiance, [2.5], P3.T.couche);
+
+    // 5. Le fondu : la panthère 3D devient la panthère du logo.
+    var F0 = P3.DUREE - 0.35;
+    tl.addLabel('fondu', F0);
+    tl.to(canvas, { opacity: 0, duration: 1.2, ease: 'power2.inOut' }, F0);
+    tl.to(r.panthere, { opacity: 1, duration: 1.2, ease: 'power2.inOut' }, F0);
+
+    // 6. RAID surgit sous elle, la croix tourne, les filets se tracent.
+    var Ls = F0 + 0.85;
+    tl.addLabel('lettres', Ls);
+    tl.to(hautes, { y: 0, opacity: 1, duration: 0.6, ease: 'expo.out', stagger: 0.11 }, Ls);
+    [0, 0.11, 0.22, 0.33].forEach(function (d, k) { tl.call(Son.impact, [0.55 + k * 0.12], Ls + d); });
+    tl.to(L.croix, { rotation: 0, scale: 1, opacity: 1, duration: 1.0, ease: 'expo.out' }, Ls + 0.3);
+    tl.to([r.barres.bleu, r.barres.rouge], { scaleX: 1, duration: 0.8, ease: 'expo.inOut' }, Ls + 0.55);
+    tl.call(Son.braam, null, Ls + 0.5);
+    if (o.surLettres) o.surLettres(tl, Ls);
+
+    // 7. Fondu vers le logo officiel.
+    var F = Ls + 1.45;
+    tl.addLabel('logo', F);
+    tl.to(r.logoFinal, { opacity: 1, duration: 0.9, ease: 'power2.inOut' }, F);
+    tl.to([r.panthere, r.lettres.croix, hautes, r.barres.bleu, r.barres.rouge], { opacity: 0, duration: 0.9, ease: 'power2.inOut' }, F + 0.05);
+    if (o.surLogo) o.surLogo(tl, F);
+    tl.addLabel('fin', F + 1.0);
+    return tl;
+  }
+
   // L'écran d'entrée : « Entrer » (avec son), « Entrer sans le son », puis « Passer l'intro ».
+  // o.construire() fabrique l'intro au moment du clic (3D si elle est chargée, sinon 2D) ;
+  // o.attendre est une promesse : les boutons patientent jusqu'à ce que la panthère 3D soit prête.
   function porte(o) {
     var reduit = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var fini = false;
+    var fini = false, tl = null;
+    function obtenir() { if (!tl) tl = o.construire ? o.construire() : o.tl; return tl; }
     function terminer() {
       if (fini) return; fini = true;
       if (o.passer) o.passer.hidden = true;
@@ -192,30 +284,46 @@ window.Panthere = (function () {
     function echap(e) { if (e.key === 'Escape') passer(); }
     function passer() {
       Son.couper();
-      o.tl.progress(1);
+      obtenir().progress(1);
       terminer();
     }
     function lancer(avecSon) {
       if (avecSon) Son.init();
+      var t = obtenir();
       o.porte.classList.add('porte-ouverte');
       setTimeout(function () { o.porte.hidden = true; }, 700);
       if (o.passer) { o.passer.hidden = false; o.passer.addEventListener('click', passer); }
       document.addEventListener('keydown', echap);
       o.avant && o.avant();
-      o.tl.eventCallback('onComplete', terminer);
-      o.tl.play(0);
+      t.eventCallback('onComplete', terminer);
+      t.play(0);
+    }
+    function brancher() {
+      o.entrer.addEventListener('click', function () { lancer(true); });
+      if (o.muet) o.muet.addEventListener('click', function () { lancer(false); });
     }
     if (reduit) {
       o.porte.hidden = true;
       o.avant && o.avant();
-      o.tl.progress(1);
+      obtenir().progress(1);
       terminer();
       return;
     }
-    o.entrer.addEventListener('click', function () { lancer(true); });
-    if (o.muet) o.muet.addEventListener('click', function () { lancer(false); });
-    
+    if (!o.attendre) { brancher(); return; }
+    var boutons = [o.entrer, o.muet].filter(Boolean), libelle = o.entrer.innerHTML;
+    boutons.forEach(function (b) { b.disabled = true; b.setAttribute('aria-busy', 'true'); });
+    o.entrer.textContent = 'Chargement…';
+    var delai = new Promise(function (ok) { setTimeout(ok, 8000); });
+    Promise.race([o.attendre, delai]).then(function () {
+      o.entrer.innerHTML = libelle;
+      boutons.forEach(function (b) { b.disabled = false; b.removeAttribute('aria-busy'); });
+      brancher();
+    });
   }
 
-  return { creer: creer, intro: intro, porte: porte, CADRES: CADRES };
+  function intro2D3D(r, o) {
+    return (o && o.troisD && o.troisD.pret) ? intro3D(r, o) : intro(r, o);
+  }
+
+  return { creer: creer, intro: intro2D3D, intro2D: intro, porte: porte, CADRES: CADRES };
 })();

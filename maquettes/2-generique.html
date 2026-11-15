@@ -160,6 +160,8 @@ a { color: inherit; text-underline-offset: .25em; }
   .ligne .nom { font-size: .9rem; }
 }
 </style>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+<script>window.__p3 = new Promise(function (ok) { window.__p3ok = ok; if (location.protocol === 'file:') ok(false); });</script>
 </head>
 <body>
 <div class="porte" id="porte">
@@ -216,6 +218,7 @@ a { color: inherit; text-underline-offset: .25em; }
     <p class="mot-fin" aria-hidden="true">Fin</p>
     <footer class="pied">
       <span>© GOST 31 · Une question ? Écrivez-nous à l’adresse ci-dessus.</span>
+      <span>Panthère 3D d’après « <a href="https://sketchfab.com/3d-models/panther-semi-low-poly-sculpt-23ae433d4ba74ca49a580d6740f4cf04">Panther semi low poly sculpt</a> » de uv15o6, licence <a href="https://creativecommons.org/licenses/by/4.0/deed.fr">CC BY 4.0</a>, animée pour GOST 31.</span>
       <button type="button" id="revoir">Revoir l’intro</button>
     </footer>
   </section>
@@ -300,7 +303,9 @@ a { color: inherit; text-underline-offset: .25em; }
 
   var cadreFinal = '-80 -60 860 1060';
   var texte = document.getElementById('ouverture-texte');
-  var tl = Panthere.intro(rig, {
+  Son.charger({ pas: 'assets/son/pas.mp3', grondement: 'assets/son/rugissement.mp3', rugissement: 'assets/son/rugissement-reel.mp3' });
+  var tl = null;
+  var optsIntro = {
     cadreFinal: cadreFinal,
     surRugit: function (tl, t) {
       tl.fromTo('#eclair', { opacity: 0 }, { keyframes: [{ opacity: 0.42, duration: 0.06 }, { opacity: 0, duration: 0.5, ease: 'power2.out' }], immediateRender: false }, t + 0.02);
@@ -311,13 +316,24 @@ a { color: inherit; text-underline-offset: .25em; }
       tl.to('#projecteur', { opacity: 0.55, duration: 1.2 }, t);
       tl.fromTo(texte, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 1.2, ease: 'expo.out' }, t + 0.3);
     }
-  });
-  tl.fromTo('#projecteur', { opacity: 0 }, { opacity: 1, duration: 0.25, ease: 'steps(3)' }, 0.1);
-  tl.call(Son.impact, [0.35], 0.1);
-  window.__tl = tl;
+  };
+  function construire() {
+    // En 3D, le gros plan centre la tête à l'écran : les encres se placent au centre du cadre.
+    var en3D = window.Panthere3D && window.Panthere3D.pret, vb = cadreFinal.split(' ').map(Number);
+    var cx = vb[0] + vb[2] / 2, cy = vb[1] + vb[3] / 2;
+    [[-190, -40], [0, -90], [190, -30]].forEach(function (d, k) {
+      encres[k].setAttribute('cx', en3D ? cx + d[0] : [330, 445, 560][k]);
+      encres[k].setAttribute('cy', en3D ? cy + d[1] : [70, 40, 80][k]);
+      encres[k].setAttribute('r', en3D ? 260 : 150);
+    });
+    tl = Panthere.intro(rig, Object.assign({ troisD: window.Panthere3D }, optsIntro));
+    tl.fromTo('#projecteur', { opacity: 0 }, { opacity: 1, duration: 0.25, ease: 'steps(3)' }, 0.1);
+    tl.call(Son.impact, [0.35], 0.1);
+    window.__tl = tl; return tl;
+  }
 
   function ouvrirSite() { document.getElementById('barre').classList.add('visible'); lenis.start(); ScrollTrigger.refresh(); }
-  Panthere.porte({ porte: document.getElementById('porte'), entrer: document.getElementById('entrer'), muet: document.getElementById('entrer-muet'), passer: document.getElementById('passer'), tl: tl, apres: ouvrirSite });
+  Panthere.porte({ porte: document.getElementById('porte'), entrer: document.getElementById('entrer'), muet: document.getElementById('entrer-muet'), passer: document.getElementById('passer'), construire: construire, attendre: window.__p3, apres: ouvrirSite });
   document.getElementById('revoir').addEventListener('click', function () {
     lenis.scrollTo(0, { immediate: true }); lenis.stop();
     tl.eventCallback('onComplete', function () { lenis.start(); }); tl.play(0);
@@ -372,6 +388,10 @@ a { color: inherit; text-underline-offset: .25em; }
     gsap.fromTo(b.children, { opacity: 0, y: 30 }, { opacity: 1, y: 0, stagger: 0.05, ease: 'power2.out', scrollTrigger: { trigger: b, start: 'top 88%', end: 'top 55%', scrub: true } });
   });
 })();
+</script>
+<script type="module">
+import './shared/panthere3d.js';
+if (location.protocol !== 'file:') window.Panthere3D.charger(document.getElementById('scene'), 'assets/panthere.glb', { ciel: 0.45, cle: 1.3, contre: 5.0, exposition: 1.05 }).then(function () { window.__p3ok(true); }, function () { window.__p3ok(false); });
 </script>
 </body>
 </html>

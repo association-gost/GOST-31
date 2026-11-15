@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GOST 31 · Le Défilé</title>
+<meta name="description" content="Les goodies de GOST 31 : t-shirts, casquettes, pulls, doudoune, serviette, pétanque et la cave. Commande par e-mail.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Extra+Condensed:wght@600;800&family=Barlow:wght@400;500;600&display=swap">
+<style>
+:root {
+  --ciel-haut: #4c82c3;
+  --ciel-bas: #bcd4ec;
+  --encre: #0c1736;
+  --encre-douce: #24345f;
+  --bleu: #283378;
+  --rouge: #bf001a;
+  --blanc: #ffffff;
+  --nuit: #070c20;
+  --nuit-2: #121b40;
+  --display: "Saira Extra Condensed", "Arial Narrow", sans-serif;
+  --texte: "Barlow", system-ui, sans-serif;
+  --gouttiere: clamp(16px, 4vw, 56px);
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html { scrollbar-color: var(--bleu) var(--ciel-bas); }
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-stopped { overflow: hidden; }
+body {
+  margin: 0;
+  background: var(--ciel-haut);
+  color: var(--encre);
+  font-family: var(--texte);
+  font-size: 17px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: var(--rouge); color: var(--blanc); }
+:focus-visible { outline: 3px solid var(--rouge); outline-offset: 3px; }
+img { display: block; max-width: 100%; }
+h1, h2, h3 { margin: 0; font-family: var(--display); font-weight: 800; text-transform: uppercase; line-height: .92; letter-spacing: .005em; text-wrap: balance; }
+p { margin: 0; }
+a { color: inherit; text-underline-offset: .2em; }
+.visuellement-cache { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* Le ciel : jour, crépuscule, nuit, en fondu au fil du défilement. */
+.ciel { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
+.ciel > div { position: absolute; inset: 0; }
+.ciel-jour { background: linear-gradient(180deg, var(--ciel-haut) 0%, #79a4d6 55%, var(--ciel-bas) 100%); }
+.ciel-soir { background: linear-gradient(180deg, #172457 0%, #34407e 60%, #6c6aa0 100%); opacity: 0; }
+.ciel-nuit { background: linear-gradient(180deg, var(--nuit) 0%, var(--nuit-2) 100%); opacity: 0; }
+
+/* Écran d'entrée */
+.porte {
+  position: fixed; inset: 0; z-index: 50;
+  display: grid; place-items: center;
+  background: linear-gradient(180deg, var(--ciel-haut), #79a4d6 60%, var(--ciel-bas));
+  transition: opacity .7s cubic-bezier(.2,.7,.2,1);
+}
+.porte.porte-ouverte { opacity: 0; pointer-events: none; }
+.porte-contenu { display: grid; justify-items: center; gap: 28px; padding: var(--gouttiere); text-align: center; }
+.porte-titre { font-family: var(--display); font-weight: 800; font-size: clamp(3.5rem, 13vw, 8.5rem); line-height: .85; color: var(--encre); text-transform: uppercase; }
+.porte-titre span { display: block; font-size: .32em; letter-spacing: .32em; font-weight: 600; margin-top: .5em; color: var(--encre-douce); }
+.bouton-entrer {
+  display: inline-flex; align-items: center; gap: 14px;
+  font: 800 1.5rem/1 var(--display); text-transform: uppercase; letter-spacing: .12em;
+  color: var(--blanc); background: var(--encre); border: 0; cursor: pointer;
+  padding: 18px 34px 18px 28px; min-height: 56px;
+  transition: background .25s, transform .25s cubic-bezier(.2,.7,.2,1);
+}
+.bouton-entrer:hover { background: var(--bleu); transform: translateY(-2px); }
+.bouton-entrer:active { transform: translateY(0); }
+.bouton-entrer svg { width: 26px; height: 26px; }
+.lien-muet { font: 500 .95rem/1 var(--texte); color: var(--encre); background: none; border: 0; text-decoration: underline; cursor: pointer; padding: 10px; }
+.bouton-passer {
+  position: fixed; right: var(--gouttiere); bottom: 22px; z-index: 40;
+  font: 600 .85rem/1 var(--texte); letter-spacing: .08em; text-transform: uppercase;
+  color: var(--encre); background: rgba(255,255,255,.72); border: 0; padding: 12px 16px; cursor: pointer;
+}
+.bouton-passer:hover { background: var(--blanc); }
+
+/* Barre de navigation : l'ordre de passage. */
+.barre {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 30;
+  display: flex; align-items: center; gap: 28px;
+  padding: 14px var(--gouttiere);
+  transform: translateY(-110%); transition: transform .6s cubic-bezier(.2,.7,.2,1), color .4s;
+}
+.barre::before { content: ''; position: absolute; inset: 0 0 -26px; z-index: -1; background: linear-gradient(180deg, rgba(76,130,195,.92) 0%, rgba(76,130,195,.6) 60%, rgba(76,130,195,0) 100%); transition: opacity .4s; }
+.barre.de-nuit::before { background: linear-gradient(180deg, rgba(7,12,32,.94) 0%, rgba(7,12,32,.6) 60%, rgba(7,12,32,0) 100%); }
+.barre.visible { transform: none; }
+.barre-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; font: 800 1.35rem/1 var(--display); text-transform: uppercase; letter-spacing: .04em; }
+.barre-logo img { width: 42px; height: auto; }
+.barre-logo .logo-nuit { display: none; }
+.barre nav { display: flex; gap: 22px; margin-left: auto; }
+.barre nav a { text-decoration: none; font: 600 1.05rem/1 var(--display); text-transform: uppercase; letter-spacing: .08em; padding: 8px 0; border-bottom: 2px solid transparent; }
+.barre nav a:hover, .barre nav a[aria-current="true"] { border-color: var(--rouge); }
+.barre-commander {
+  font: 800 1.05rem/1 var(--display); text-transform: uppercase; letter-spacing: .1em; text-decoration: none;
+  color: var(--blanc); background: var(--rouge); padding: 12px 18px;
+}
+.barre-commander:hover { background: #9c0015; }
+.barre.de-nuit { color: var(--blanc); }
+.barre.de-nuit .logo-jour { display: none; }
+.barre.de-nuit .logo-nuit { display: block; }
+
+/* Ouverture : la panthère */
+.ouverture { position: relative; height: 100vh; height: 100svh; overflow: hidden; }
+.scene { position: absolute; inset: 0; }
+.panthere-svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.fumees-intro { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.ouverture-texte {
+  position: absolute; z-index: 2;
+  right: var(--gouttiere); top: 50%; transform: translateY(-50%);
+  width: min(40vw, 560px);
+  opacity: 0;
+}
+.ouverture-texte h1 { font-size: clamp(3.2rem, 7.4vw, 6rem); color: var(--encre); }
+.ouverture-texte p { margin-top: 22px; font-size: 1.15rem; max-width: 34ch; color: var(--encre); }
+.ouverture-actions { display: flex; flex-wrap: wrap; gap: 14px 22px; align-items: center; margin-top: 30px; }
+.bouton-plein {
+  display: inline-block; text-decoration: none;
+  font: 800 1.15rem/1 var(--display); letter-spacing: .1em; text-transform: uppercase;
+  color: var(--blanc); background: var(--encre); padding: 16px 24px;
+  transition: background .25s;
+}
+.bouton-plein:hover { background: var(--bleu); }
+.lien-fort { font: 600 1.05rem/1 var(--texte); text-decoration: underline; text-decoration-thickness: 2px; text-decoration-color: var(--rouge); }
+.indice-defiler {
+  position: absolute; left: 50%; bottom: 20px; transform: translateX(-50%); z-index: 2;
+  font: 600 .8rem/1 var(--texte); letter-spacing: .24em; text-transform: uppercase; color: var(--encre);
+  display: grid; justify-items: center; gap: 10px; opacity: 0;
+}
+.indice-defiler i { width: 2px; height: 34px; background: var(--encre); transform-origin: top; animation: tombe 1.8s cubic-bezier(.6,0,.2,1) infinite; }
+@keyframes tombe { 0% { transform: scaleY(0); } 50% { transform: scaleY(1); transform-origin: top; } 51% { transform-origin: bottom; } 100% { transform: scaleY(0); transform-origin: bottom; } }
+
+/* Les rangs : chaque catégorie défile de droite à gauche. */
+.rang { position: relative; height: 100vh; height: 100svh; overflow: hidden; }
+.rang-fumees { position: absolute; left: 0; right: 0; top: 7%; height: 32%; width: 100%; pointer-events: none; }
+.piste {
+  position: absolute; left: 0; top: 0; bottom: 0;
+  display: flex; align-items: center; gap: clamp(28px, 4vw, 64px);
+  padding: 76px var(--gouttiere) 28px calc(var(--gouttiere) + 2vw);
+  will-change: transform;
+}
+.fanion { flex: 0 0 auto; width: min(36vw, 520px); align-self: center; }
+.fanion h2 { font-size: clamp(4.4rem, 11vw, 10rem); color: var(--encre); }
+.fanion p { margin-top: 18px; font: 600 1.25rem/1.2 var(--display); letter-spacing: .14em; text-transform: uppercase; color: var(--encre-douce); }
+.fanion .mention { margin-top: 18px; font: 500 .95rem/1.45 var(--texte); letter-spacing: 0; text-transform: none; max-width: 32ch; }
+.defilant { flex: 0 0 auto; display: grid; grid-template-columns: auto; gap: 16px; align-content: center; }
+.defilant figure { margin: 0; position: relative; height: min(56vh, 520px); aspect-ratio: var(--r); background: var(--encre); }
+.defilant img { width: 100%; height: 100%; object-fit: cover; }
+.defilant .prix {
+  position: absolute; top: -18px; right: -14px;
+  font: 800 2.4rem/1 var(--display); color: var(--blanc); background: var(--rouge);
+  padding: 10px 14px 8px; font-variant-numeric: tabular-nums;
+}
+.defilant .prix small { display: block; font: 600 .78rem/1 var(--texte); letter-spacing: .06em; text-transform: uppercase; margin-top: 4px; }
+.pancarte { width: 0; min-width: 100%; }
+.pancarte h3 { font-size: clamp(1.8rem, 2.6vw, 2.4rem); color: var(--encre); }
+.pancarte p { margin-top: 6px; color: var(--encre); }
+.rang.soir .fanion h2, .rang.soir .fanion p, .rang.soir .pancarte h3, .rang.soir .pancarte p { color: var(--blanc); }
+.rang.soir .defilant figure { background: #000; }
+.fin-de-rang { flex: 0 0 18vw; }
+
+/* Commander : la nuit, le feu d'artifice. */
+.commander { position: relative; min-height: 100vh; color: var(--blanc); padding: 18vh var(--gouttiere) 10vh; overflow: hidden; }
+.commander canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.commander-grille { position: relative; display: grid; grid-template-columns: 1.1fr 1fr; gap: clamp(32px, 6vw, 96px); max-width: 1240px; margin: 0 auto; align-items: start; }
+.commander h2 { font-size: clamp(3.6rem, 9vw, 8rem); }
+.etapes { list-style: none; padding: 0; margin: 34px 0 0; display: grid; gap: 18px; counter-reset: e; }
+.etapes li { display: grid; grid-template-columns: 56px 1fr; gap: 14px; align-items: baseline; counter-increment: e; font-size: 1.12rem; }
+.etapes li::before { content: counter(e); font: 800 2.6rem/1 var(--display); color: var(--rouge); }
+.etapes strong { font-weight: 600; }
+.note { margin-top: 26px; color: #c9d3ee; }
+.boite-mail { border-top: 3px solid var(--blanc); padding-top: 26px; }
+.boite-mail h3 { font-size: 1.6rem; letter-spacing: .06em; }
+.adresse { display: block; margin-top: 14px; font: 800 clamp(1.6rem, 3.2vw, 2.5rem)/1.1 var(--display); letter-spacing: .02em; overflow-wrap: anywhere; user-select: all; }
+.boutons-mail { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 22px; }
+.bouton-clair, .bouton-rouge {
+  font: 800 1.05rem/1 var(--display); letter-spacing: .1em; text-transform: uppercase; text-decoration: none;
+  padding: 15px 20px; border: 0; cursor: pointer; min-height: 48px; display: inline-flex; align-items: center;
+}
+.bouton-clair { background: var(--blanc); color: var(--encre); }
+.bouton-clair:hover { background: #dfe7f7; }
+.bouton-clair.est-copie { background: #c9f0d2; }
+.bouton-rouge { background: var(--rouge); color: var(--blanc); }
+.bouton-rouge:hover { background: #9c0015; }
+.modele { margin-top: 26px; padding: 18px 20px; white-space: pre-line; background: rgba(255,255,255,.08); border-left: 1px solid rgba(255,255,255,.4); color: #dbe2f5; font-size: .98rem; }
+.modele-titre { margin-top: 26px; font: 600 .82rem/1 var(--texte); letter-spacing: .16em; text-transform: uppercase; color: #aeb9dc; }
+.pied { position: relative; max-width: 1240px; margin: 12vh auto 0; padding-top: 22px; border-top: 1px solid rgba(255,255,255,.25); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; color: #aeb9dc; font-size: .92rem; }
+.pied button { font: inherit; color: inherit; background: none; border: 0; text-decoration: underline; cursor: pointer; padding: 0; }
+
+/* Mouvement réduit : pas d'épinglage, les rangs se parcourent au doigt. */
+.sans-mouvement .rang { height: auto; overflow: visible; padding: 90px 0 40px; }
+.sans-mouvement .piste { position: static; overflow-x: auto; scroll-snap-type: x mandatory; }
+.sans-mouvement .defilant { scroll-snap-align: start; }
+.sans-mouvement .ouverture-texte, .sans-mouvement .indice-defiler { opacity: 1; }
+
+@media (orientation: portrait), (max-width: 820px) {
+  .ouverture-texte { left: var(--gouttiere); right: var(--gouttiere); top: auto; bottom: 74px; transform: none; width: auto; }
+  .ouverture-texte h1 { font-size: clamp(2.8rem, 12vw, 4.4rem); }
+  .ouverture-texte p { font-size: 1.02rem; margin-top: 14px; }
+  .ouverture-actions { margin-top: 20px; }
+  .indice-defiler { display: none; }
+  .barre nav { display: none; }
+  .barre-commander { margin-left: auto; }
+  .fanion { width: 78vw; }
+  .defilant figure { width: 80vw; height: 48vh; aspect-ratio: auto; }
+  .rang-fumees { top: 4%; }
+  .fumees-intro { height: 62%; }
+  .commander-grille { grid-template-columns: 1fr; }
+  .defilant .prix { right: -6px; }
+}
+</style>
+</head>
+<body>
+<div class="ciel" aria-hidden="true"><div class="ciel-jour"></div><div class="ciel-soir"></div><div class="ciel-nuit"></div></div>
+
+<div class="porte" id="porte">
+  <div class="porte-contenu">
+    <p class="porte-titre">GOST 31<span>Les goodies de l’antenne</span></p>
+    <button class="bouton-entrer" id="entrer" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/><path d="M19 6a8.5 8.5 0 0 1 0 12"/></svg>
+      Entrer
+    </button>
+    <button class="lien-muet" id="entrer-muet" type="button">Entrer sans le son</button>
+  </div>
+</div>
+<button class="bouton-passer" id="passer" type="button" hidden>Passer l’intro</button>
+
+<header class="barre" id="barre">
+  <a class="barre-logo" href="#haut" aria-label="GOST 31, retour en haut">
+    <img class="logo-jour" src="assets/logo.png" alt="" width="42" height="42">
+    <img class="logo-nuit" src="assets/logo-clair.png" alt="" width="42" height="42">
+    GOST 31
+  </a>
+  <nav aria-label="Catégories" id="nav"></nav>
+  <a class="barre-commander" href="#commander">Commander</a>
+</header>
+
+<main id="haut">
+  <section class="ouverture" aria-label="Accueil">
+    <div class="scene" id="scene">
+      <svg class="fumees-intro" id="fumees-intro" viewBox="0 0 1600 900" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <filter id="fumee" x="-5%" y="-80%" width="110%" height="260%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.009 0.06" numOctaves="3" seed="7" result="bruit"/>
+            <feDisplacementMap in="SourceGraphic" in2="bruit" scale="30" xChannelSelector="R" yChannelSelector="G" result="d"/>
+            <feGaussianBlur in="d" stdDeviation="4"/>
+          </filter>
+        </defs>
+        <g filter="url(#fumee)" fill="none" stroke-linecap="round" stroke-width="30">
+          <path pathLength="1" stroke="#2d3b8c" d="M1700 800 C 1250 770, 950 640, 640 520 S 120 300, -120 200"/>
+          <path pathLength="1" stroke="#ffffff" d="M1700 835 C 1250 805, 950 675, 640 555 S 120 335, -120 235"/>
+          <path pathLength="1" stroke="#d3172f" d="M1700 870 C 1250 840, 950 710, 640 590 S 120 370, -120 270"/>
+        </g>
+      </svg>
+    </div>
+    <div class="ouverture-texte" id="ouverture-texte">
+      <h1>Les goodies de GOST 31</h1>
+      <p>Un objet à votre image, et une petite aide pour nos projets : chaque achat finance nos actions de l’année.</p>
+      <div class="ouverture-actions">
+        <a class="bouton-plein" href="#rang-tshirts">Voir la collection</a>
+        <a class="lien-fort" href="#commander">Comment commander</a>
+      </div>
+    </div>
+    <div class="indice-defiler" id="indice" aria-hidden="true">Faites défiler<i></i></div>
+  </section>
+
+  <div id="rangs"></div>
+
+  <section class="commander" id="commander" aria-labelledby="titre-commander">
+    <canvas id="feu" aria-hidden="true"></canvas>
+    <div class="commander-grille">
+      <div>
+        <h2 id="titre-commander">Pour commander</h2>
+        <ol class="etapes">
+          <li><span><strong>Choisissez</strong> vos goodies et les quantités.</span></li>
+          <li><span><strong>Écrivez-nous</strong> par e-mail avec votre nom et votre commande.</span></li>
+          <li><span><strong>Nous vous répondons</strong> pour confirmer le total et organiser la remise.</span></li>
+        </ol>
+        <p class="note">Pas de paiement en ligne : le règlement se fait à la remise de votre commande.</p>
+      </div>
+      <div class="boite-mail">
+        <h3>Notre adresse e-mail</h3>
+        <code class="adresse" id="adresse"></code>
+        <div class="boutons-mail">
+          <button class="bouton-clair" type="button" id="copier" aria-controls="adresse">Copier l’adresse</button>
+          <a class="bouton-rouge" id="mailto" href="#">Écrire le message</a>
+        </div>
+        <p class="modele-titre">Exemple de message</p>
+        <p class="modele" id="modele"></p>
+      </div>
+    </div>
+    <footer class="pied">
+      <span>© GOST 31 · Une question ? Écrivez-nous à l’adresse ci-dessus.</span>
+      <button type="button" id="revoir">Revoir l’intro</button>
+    </footer>
+  </section>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+<script src="shared/catalogue.js"></script>
+<script src="shared/son.js"></script>
+<script src="shared/panthere.js"></script>
+<script>
+(function () {
+  gsap.registerPlugin(ScrollTrigger);
+  var reduit = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduit) document.documentElement.classList.add('sans-mouvement');
+
+  // Les rangs du défilé, regroupés pour que chaque passage ait de la matière.
+  var C = {}; CATALOGUE.forEach(function (c) { C[c.id] = c; });
+  var RANGS = [
+    { id: 'tshirts', titre: 'T-shirts', sous: '4 modèles · 15 €', produits: C.tshirts.produits },
+    { id: 'casquettes', titre: 'Casquettes', sous: '4 modèles · 20 €', produits: C.casquettes.produits },
+    { id: 'hiver', titre: 'Pulls et doudoune', sous: 'Pulls à capuche · doudoune sans manches', produits: C.pulls.produits.concat(C.doudoune.produits) },
+    { id: 'detente', titre: 'Serviette et pétanque', sous: 'Pour la plage et le boulodrome', produits: C.serviette.produits.concat(C.petanque.produits) },
+    { id: 'cave', titre: 'La cave', sous: 'Vins, champagne et rhum', produits: C.cave.produits, alcool: true, soir: true }
+  ];
+  var hRangs = RANGS.map(function (r) {
+    var items = r.produits.map(function (p) {
+      return '<article class="defilant">' +
+        '<figure style="--r:' + p.w + '/' + p.h + '"><img src="assets/produits/' + p.img + '" alt="' + p.nom + '" width="' + p.w + '" height="' + p.h + '" loading="lazy">' +
+        '<p class="prix">' + Outils.prix(p.prix) + '<small>' + p.unite + '</small></p></figure>' +
+        '<div class="pancarte"><h3>' + p.nom + '</h3><p>' + p.desc + '</p></div></article>';
+    }).join('');
+    return '<section class="rang' + (r.soir ? ' soir' : '') + '" id="rang-' + r.id + '" aria-labelledby="t-' + r.id + '">' +
+      '<svg class="rang-fumees" viewBox="0 0 1600 300" preserveAspectRatio="none" aria-hidden="true"><g filter="url(#fumee)" fill="none" stroke-linecap="round" stroke-width="18">' +
+      '<path pathLength="1" stroke="#2d3b8c" d="M1640 210 C 1200 180, 900 90, 500 110 S 60 70, -40 40"/>' +
+      '<path pathLength="1" stroke="#ffffff" d="M1640 236 C 1200 206, 900 116, 500 136 S 60 96, -40 66"/>' +
+      '<path pathLength="1" stroke="#d3172f" d="M1640 262 C 1200 232, 900 142, 500 162 S 60 122, -40 92"/></g></svg>' +
+      '<div class="piste"><div class="fanion"><h2 id="t-' + r.id + '">' + r.titre + '</h2><p>' + r.sous + '</p>' +
+      (r.alcool ? '<p class="mention">' + MENTION_ALCOOL + '</p>' : '') + '</div>' + items + '<div class="fin-de-rang"></div></div></section>';
+  }).join('');
+  document.getElementById('rangs').innerHTML = hRangs;
+  document.getElementById('nav').innerHTML = RANGS.map(function (r) { return '<a href="#rang-' + r.id + '">' + r.titre + '</a>'; }).join('');
+
+  // Commande
+  var mail = COMMANDE.mail;
+  document.getElementById('adresse').textContent = mail;
+  document.getElementById('copier').setAttribute('data-copier', mail);
+  document.getElementById('mailto').href = Outils.mailto();
+  document.getElementById('modele').textContent = COMMANDE.modele;
+  Outils.brancherCopie();
+
+  // Défilement doux
+  var lenis = new Lenis({ lerp: reduit ? 1 : 0.09, smoothWheel: true });
+  lenis.on('scroll', ScrollTrigger.update);
+  gsap.ticker.add(function (t) { lenis.raf(t * 1000); });
+  gsap.ticker.lagSmoothing(0);
+  lenis.stop();
+  document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      var id = a.getAttribute('href'); if (id.length < 2) return;
+      var cible = document.querySelector(id); if (!cible) return;
+      e.preventDefault(); lenis.scrollTo(cible, { duration: 1.6 });
+    });
+  });
+
+  // La panthère
+  var paysage = function () { return window.innerWidth / window.innerHeight > 1.05 && window.innerWidth > 820; };
+  var cadreFinal = paysage() ? '-60 -40 1600 773' : '-60 -40 820 1240';
+  var rig = Panthere.creer(document.getElementById('scene'), { src: 'assets/logo-hd.png', prefixe: 'a', ondes: '#ffffff' });
+  var fumees = document.querySelectorAll('#fumees-intro path');
+  gsap.set(fumees, { strokeDasharray: 1, strokeDashoffset: 1 });
+  var texte = document.getElementById('ouverture-texte');
+  var tl = Panthere.intro(rig, {
+    cadreFinal: cadreFinal,
+    surLettres: function (tl, t) {
+      // La patrouille passe au moment où RAID se pose.
+      tl.call(Son.jets, [2.8], t - 0.2);
+      tl.to(fumees, { strokeDashoffset: 0, duration: 2.0, ease: 'power2.inOut', stagger: 0.07 }, t - 0.1);
+    },
+    surLogo: function (tl, t) {
+      tl.fromTo(texte, { opacity: 0, y: 24 }, { opacity: 1, y: paysage() ? '-50%' : 0, duration: 1, ease: 'expo.out' }, t + 0.2);
+      tl.to('#indice', { opacity: 1, duration: 0.8 }, t + 0.8);
+    }
+  });
+  window.__tl = tl;
+
+  function ouvrirSite() {
+    document.getElementById('barre').classList.add('visible');
+    lenis.start();
+    ScrollTrigger.refresh();
+  }
+  Panthere.porte({
+    porte: document.getElementById('porte'),
+    entrer: document.getElementById('entrer'),
+    muet: document.getElementById('entrer-muet'),
+    passer: document.getElementById('passer'),
+    tl: tl,
+    apres: ouvrirSite
+  });
+  document.getElementById('revoir').addEventListener('click', function () {
+    lenis.scrollTo(0, { immediate: true });
+    lenis.stop();
+    gsap.set(texte, { opacity: 0 });
+    tl.eventCallback('onComplete', function () { lenis.start(); });
+    tl.play(0);
+  });
+
+  if (reduit) return;
+
+  // Chaque rang est épinglé ; la piste défile de droite à gauche, la fumée se trace.
+  document.querySelectorAll('.rang').forEach(function (rang) {
+    var piste = rang.querySelector('.piste');
+    var traits = rang.querySelectorAll('.rang-fumees path');
+    gsap.set(traits, { strokeDasharray: 1, strokeDashoffset: 1 });
+    var distance = function () { return Math.max(0, piste.scrollWidth - window.innerWidth); };
+    var tlr = gsap.timeline({
+      scrollTrigger: { trigger: rang, start: 'top top', end: function () { return '+=' + (distance() + window.innerHeight * 0.3); }, pin: true, scrub: 0.7, invalidateOnRefresh: true, anticipatePin: 1 }
+    });
+    tlr.fromTo(piste, { x: function () { return window.innerWidth * 0.35; } }, { x: function () { return -distance(); }, ease: 'none', duration: 1 }, 0);
+    tlr.to(traits, { strokeDashoffset: 0, ease: 'none', duration: 0.8, stagger: 0.04 }, 0);
+    // Les photos entrent légèrement inclinées puis se redressent, comme un rang qui s'aligne.
+    rang.querySelectorAll('.defilant figure').forEach(function (f) {
+      gsap.fromTo(f, { rotation: 2.5, yPercent: 6 }, { rotation: 0, yPercent: 0, ease: 'none',
+        scrollTrigger: { trigger: f, containerAnimation: tlr, start: 'left 100%', end: 'left 45%', scrub: true } });
+    });
+  });
+
+  // Le jour tombe : crépuscule sur la cave, nuit sur la commande.
+  var barre = document.getElementById('barre');
+  gsap.to('.ciel-soir', { opacity: 1, ease: 'none', scrollTrigger: { trigger: '#rang-cave', start: 'top 85%', end: 'top 5%', scrub: true } });
+  gsap.to('.ciel-nuit', { opacity: 1, ease: 'none', scrollTrigger: { trigger: '#commander', start: 'top 100%', end: 'top 30%', scrub: true } });
+  ScrollTrigger.create({ trigger: '#rang-cave', start: 'top 40%', onToggle: function (s) { barre.classList.toggle('de-nuit', s.isActive || s.progress === 1); }, end: 'max' });
+
+  // Rubrique active dans la barre
+  document.querySelectorAll('.rang').forEach(function (rang) {
+    var lien = document.querySelector('.barre nav a[href="#' + rang.id + '"]');
+    ScrollTrigger.create({ trigger: rang, start: 'top 50%', end: function () { return '+=' + (rang.parentElement.classList.contains('pin-spacer') ? rang.parentElement.offsetHeight : rang.offsetHeight); },
+      onToggle: function (s) { if (lien) lien.setAttribute('aria-current', s.isActive ? 'true' : 'false'); } });
+  });
+
+  // Feu d'artifice tricolore derrière la commande, seulement quand il est visible.
+  var cv = document.getElementById('feu'), cx = cv.getContext('2d'), parts = [], actif = false, dpr = Math.min(2, window.devicePixelRatio || 1);
+  function taille() { cv.width = cv.offsetWidth * dpr; cv.height = cv.offsetHeight * dpr; }
+  taille(); window.addEventListener('resize', taille);
+  var COUL = ['#3e56d6', '#ffffff', '#ff2b45'];
+  function bouquet() {
+    var x = cv.width * (0.15 + Math.random() * 0.7), y = cv.height * (0.12 + Math.random() * 0.35), c = COUL[Math.floor(Math.random() * 3)];
+    for (var i = 0; i < 70; i++) {
+      var a = Math.random() * Math.PI * 2, v = (1.2 + Math.random() * 3.2) * dpr;
+      parts.push({ x: x, y: y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, vie: 1, c: c });
+    }
+  }
+  var dernier = 0;
+  function boucle(t) {
+    if (!actif) return;
+    if (t - dernier > 1100) { bouquet(); dernier = t; }
+    cx.globalCompositeOperation = 'destination-out';
+    cx.fillStyle = 'rgba(0,0,0,.18)'; cx.fillRect(0, 0, cv.width, cv.height);
+    cx.globalCompositeOperation = 'lighter';
+    for (var i = parts.length - 1; i >= 0; i--) {
+      var p = parts[i]; p.x += p.vx; p.y += p.vy; p.vy += 0.03 * dpr; p.vx *= 0.985; p.vy *= 0.985; p.vie -= 0.011;
+      if (p.vie <= 0) { parts.splice(i, 1); continue; }
+      cx.globalAlpha = p.vie * 0.9; cx.fillStyle = p.c; cx.fillRect(p.x, p.y, 2.2 * dpr, 2.2 * dpr);
+    }
+    cx.globalAlpha = 1;
+    requestAnimationFrame(boucle);
+  }
+  new IntersectionObserver(function (e) {
+    var v = e[0].isIntersecting;
+    if (v && !actif) { actif = true; requestAnimationFrame(boucle); } else if (!v) actif = false;
+  }).observe(cv);
+})();
+</script>
+</body>
+</html>

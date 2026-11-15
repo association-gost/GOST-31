@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GOST 31 · La Vitrine</title>
+<meta name="description" content="Les goodies de GOST 31 : t-shirts, casquettes, pulls, doudoune, serviette, pétanque et la cave. Commande par e-mail.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap">
+<style>
+:root {
+  --fond: #e3e5e9;
+  --encre: #0b0d10;
+  --encre-2: #3a3f49;
+  --bleu: #283378;
+  --rouge: #bf001a;
+  --blanc: #ffffff;
+  --gris: #c9cdd4;
+  --trait: 2px;
+  --gouttiere: clamp(16px, 4vw, 56px);
+  --u: min(1vw, 13.6px);
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html { background: var(--fond); scrollbar-color: var(--encre) var(--fond); }
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-stopped { overflow: hidden; }
+body { margin: 0; background: var(--fond); color: var(--encre); font-family: "Archivo", system-ui, sans-serif; font-size: 16.5px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+::selection { background: var(--bleu); color: var(--blanc); }
+:focus-visible { outline: 3px solid var(--rouge); outline-offset: 3px; }
+img { display: block; max-width: 100%; }
+h1, h2, h3 { margin: 0; font-stretch: 125%; font-variation-settings: "wdth" 125; font-weight: 800; text-transform: uppercase; line-height: 1; letter-spacing: -.01em; text-wrap: balance; }
+p { margin: 0; }
+a { color: inherit; text-underline-offset: .2em; }
+
+/* Écran d'entrée */
+.porte { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; background: var(--fond); transition: opacity .6s ease; }
+.porte.porte-ouverte { opacity: 0; pointer-events: none; }
+.porte-cadre { border: 3px solid var(--encre); background: var(--blanc); padding: clamp(28px, 5vw, 56px); display: grid; justify-items: center; gap: 24px; text-align: center; margin: var(--gouttiere); }
+.porte-titre { font: 800 clamp(2.6rem, 9vw, 5.4rem)/.9 "Archivo"; font-stretch: 125%; font-variation-settings: "wdth" 125; text-transform: uppercase; }
+.porte-sous { font-weight: 600; letter-spacing: .2em; text-transform: uppercase; font-size: .8rem; color: var(--encre-2); }
+.bouton-entrer { display: inline-flex; align-items: center; gap: 12px; min-height: 54px; font: 800 1.05rem/1 "Archivo"; font-stretch: 125%; font-variation-settings: "wdth" 125; letter-spacing: .06em; text-transform: uppercase; color: var(--blanc); background: var(--bleu); border: var(--trait) solid var(--encre); padding: 16px 26px 16px 22px; cursor: pointer; transition: background .2s; }
+.bouton-entrer:hover { background: var(--encre); }
+.bouton-entrer svg { width: 24px; height: 24px; }
+.lien-muet { font: 500 .92rem/1 "Archivo"; color: var(--encre); background: none; border: 0; text-decoration: underline; cursor: pointer; padding: 8px; }
+.bouton-passer { position: fixed; right: var(--gouttiere); bottom: 20px; z-index: 40; font: 700 .8rem/1 "Archivo"; letter-spacing: .1em; text-transform: uppercase; color: var(--encre); background: var(--blanc); border: var(--trait) solid var(--encre); padding: 11px 14px; cursor: pointer; }
+.bouton-passer:hover { background: var(--encre); color: var(--blanc); }
+
+/* Barre */
+.barre { position: fixed; top: 0; left: 0; right: 0; z-index: 30; display: flex; align-items: stretch; background: var(--blanc); border-bottom: var(--trait) solid var(--encre); transform: translateY(-110%); transition: transform .5s cubic-bezier(.2,.7,.2,1); }
+.barre.visible { transform: none; }
+.barre-logo { display: flex; align-items: center; gap: 10px; padding: 8px 18px 8px var(--gouttiere); text-decoration: none; font: 800 1rem/1 "Archivo"; font-stretch: 125%; font-variation-settings: "wdth" 125; text-transform: uppercase; border-right: var(--trait) solid var(--encre); }
+.barre-logo img { width: 38px; height: auto; }
+.barre nav { display: flex; margin-left: auto; }
+.barre nav a { display: flex; align-items: center; padding: 0 16px; text-decoration: none; font-weight: 600; font-size: .9rem; border-left: var(--trait) solid var(--encre); }
+.barre nav a:hover, .barre nav a[aria-current="true"] { background: var(--fond); }
+.barre-commander { display: flex; align-items: center; padding: 0 22px; text-decoration: none; font: 800 .95rem/1 "Archivo"; font-stretch: 125%; font-variation-settings: "wdth" 125; text-transform: uppercase; color: var(--blanc); background: var(--rouge); border-left: var(--trait) solid var(--encre); }
+.barre-commander:hover { background: var(--encre); }
+
+/* Ouverture */
+.ouverture { position: relative; height: 100vh; height: 100svh; overflow: hidden; }
+.scene { position: absolute; inset: 0; }
+.trame { position: absolute; inset: 0; width: 100%; height: 100%; }
+.trame rect { fill: none; stroke: var(--encre); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+.panthere-svg { position: relative; width: 100%; height: 100%; display: block; overflow: visible; }
+.ouverture-texte { position: absolute; right: var(--gouttiere); top: 50%; width: min(38vw, 540px); transform: translateY(-50%); background: var(--blanc); border: 3px solid var(--encre); padding: clamp(22px, 2.6vw, 36px); opacity: 0; }
+.ouverture-texte h1 { font-size: clamp(2rem, 4.2vw, 3.6rem); }
+.ouverture-texte p { margin-top: 16px; font-size: 1.08rem; }
+.ouverture-actions { display: flex; flex-wrap: wrap; gap: 0; margin-top: 24px; }
+.bouton-bleu, .bouton-blanc { display: inline-flex; align-items: center; min-height: 50px; padding: 0 20px; text-decoration: none; font: 800 .95rem/1 "Archivo"; font-stretch: 125%; font-variation-settings: "wdth" 125; text-transform: uppercase; border: var(--trait) solid var(--encre); cursor: pointer; }
+.bouton-bleu { background: var(--bleu); color: var(--blanc); }
+.bouton-bleu:hover { background: var(--encre); }
+.bouton-blanc { background: var(--blanc); color: var(--encre); margin-left: calc(-1 * var(--trait)); }
+.bouton-blanc:hover { background: var(--fond); }
+
+/* La vitrine */
+.vitrine-section { padding: 22vh var(--gouttiere) 10vh; }
+.vitrine-tete { max-width: 1320px; margin: 0 auto 0; display: grid; gap: 18px; }
+.vitrine-tete h2 { font-size: clamp(2.4rem, 6.4vw, 5.6rem); }
+.vitrine-tete p { max-width: 36ch; color: var(--encre-2); }
+.vitrine-tete { padding-right: 36%; }
+.vitrine { position: relative; max-width: 1320px; margin: clamp(120px, 16vw, 230px) auto 0; border: 3px solid var(--encre); background: var(--encre); display: grid; gap: var(--trait); }
+.panthere-couchee { position: absolute; right: 7%; bottom: 100%; width: clamp(220px, 31%, 420px); transform: translateY(14.4%); pointer-events: none; }
+.etagere { display: flex; flex-wrap: wrap; gap: var(--trait); --h: calc(var(--u) * 22); }
+.etagere::after { content: ""; flex: 1 1 0; min-width: 0; background: repeating-linear-gradient(135deg, transparent 0 11px, rgba(11,13,16,.16) 11px 12px), var(--gris); }
+.etagere[data-h="petit"] { --h: calc(var(--u) * 19); }
+.etagere[data-h="grand"] { --h: calc(var(--u) * 27); }
+.etagere[data-h="haut"] { --h: calc(var(--u) * 29); }
+.plaque { flex: 1 1 calc(var(--u) * 17); min-width: calc(var(--u) * 17); color: var(--blanc); padding: clamp(16px, 1.8vw, 26px); display: flex; flex-direction: column; justify-content: space-between; gap: 18px; }
+.plaque h2 { font-size: clamp(1.1rem, 1.8vw, 1.8rem); font-stretch: 100%; font-variation-settings: "wdth" 100; overflow-wrap: anywhere; hyphens: auto; }
+.plaque p { font-weight: 600; font-size: .95rem; }
+.plaque .mention { font-weight: 400; font-size: .82rem; line-height: 1.4; }
+.casier { flex: 0 0 auto; width: calc(var(--h) * var(--r)); display: flex; flex-direction: column; background: var(--blanc); }
+.boite { position: relative; height: var(--h); overflow: hidden; background: var(--encre); }
+.boite img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scale(var(--zoom, 1)); transition: transform .5s cubic-bezier(.2,.7,.2,1); }
+.parois { position: absolute; inset: 0; width: 100%; height: 100%; }
+.parois polygon { stroke: var(--encre); stroke-width: 1.5; stroke-linejoin: round; }
+.parois .ouverture-trait { fill: none; stroke: var(--encre); stroke-width: 2; }
+.etiquette { flex: 1; padding: 14px 16px 16px; display: grid; grid-template-columns: 1fr auto; align-content: start; gap: 6px 12px; border-top: var(--trait) solid var(--encre); }
+.etiquette h3 { font-size: .98rem; line-height: 1.15; letter-spacing: 0; }
+.etiquette .prix { font: 800 1.35rem/1 "Archivo"; font-stretch: 125%; font-variation-settings: "wdth" 125; color: var(--rouge); text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.etiquette .prix small { display: block; font: 500 .72rem/1.2 "Archivo"; color: var(--encre-2); margin-top: 3px; }
+.etiquette .desc { grid-column: 1 / -1; font-size: .88rem; line-height: 1.45; color: var(--encre-2); }
+.casier:hover .etiquette, .casier:focus-within .etiquette { background: #f3f4f6; }
+
+[data-teinte="bleu"] { --t1: #4757b8; --t2: #34429a; --t3: #283378; --t4: #1c2563; }
+[data-teinte="rouge"] { --t1: #e04a5e; --t2: #cf1f37; --t3: #b0001a; --t4: #860013; }
+[data-teinte="encre"] { --t1: #4a505c; --t2: #353a44; --t3: #23272e; --t4: #121418; }
+[data-teinte="gris"] { --t1: #eef0f3; --t2: #d6d9de; --t3: #bcc1c8; --t4: #9aa0aa; }
+.plaque[data-teinte] { background: var(--t3); }
+.plaque[data-teinte="gris"] { color: var(--encre); }
+.p-haut { fill: var(--t1); } .p-gauche { fill: var(--t2); } .p-droite { fill: var(--t3); } .p-bas { fill: var(--t4); }
+
+/* Bon de commande */
+.commander { padding: 8vh var(--gouttiere) 10vh; }
+.bon { max-width: 1120px; margin: 0 auto; background: var(--blanc); border: 3px solid var(--encre); display: grid; grid-template-columns: 1fr 1fr; }
+.bon > div { padding: clamp(22px, 3.4vw, 48px); }
+.bon > div + div { border-left: 3px solid var(--encre); }
+.bon h2 { font-size: clamp(2rem, 4.4vw, 3.6rem); }
+.etapes { list-style: none; padding: 0; margin: 28px 0 0; display: grid; gap: 0; counter-reset: e; border-top: var(--trait) solid var(--encre); }
+.etapes li { counter-increment: e; display: grid; grid-template-columns: 52px 1fr; align-items: center; border-bottom: var(--trait) solid var(--encre); min-height: 62px; }
+.etapes li::before { content: counter(e); align-self: stretch; display: grid; place-items: center; font: 800 1.5rem/1 "Archivo"; font-stretch: 125%; font-variation-settings: "wdth" 125; color: var(--blanc); background: var(--bleu); border-right: var(--trait) solid var(--encre); margin-right: 16px; }
+.etapes strong { font-weight: 700; }
+.note { margin-top: 20px; color: var(--encre-2); }
+.champ-titre { font-weight: 700; font-size: .78rem; letter-spacing: .14em; text-transform: uppercase; color: var(--encre-2); }
+.adresse { display: block; margin-top: 10px; padding: 14px 16px; border: var(--trait) solid var(--encre); background: var(--fond); font: 800 clamp(1.05rem, 2vw, 1.5rem)/1.2 "Archivo"; font-stretch: 112%; overflow-wrap: anywhere; user-select: all; }
+.boutons-mail { display: flex; flex-wrap: wrap; margin-top: -2px; }
+.boutons-mail > * { flex: 1 1 auto; justify-content: center; }
+.boutons-mail .bouton-blanc.est-copie { background: #c9f0d2; }
+.boutons-mail .bouton-rouge { display: inline-flex; align-items: center; min-height: 50px; padding: 0 20px; text-decoration: none; font: 800 .95rem/1 "Archivo"; font-stretch: 125%; font-variation-settings: "wdth" 125; text-transform: uppercase; border: var(--trait) solid var(--encre); background: var(--rouge); color: var(--blanc); margin-left: -2px; }
+.boutons-mail .bouton-rouge:hover { background: var(--encre); }
+.boutons-mail .bouton-blanc { margin-left: 0; }
+.modele { margin-top: 26px; white-space: pre-line; font-size: .95rem; padding: 14px 16px; border: var(--trait) dashed var(--encre-2); color: var(--encre-2); }
+.pied { max-width: 1120px; margin: 40px auto 0; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; font-size: .9rem; color: var(--encre-2); }
+.pied button { font: inherit; color: inherit; background: none; border: 0; text-decoration: underline; cursor: pointer; padding: 0; }
+
+.sans-mouvement .ouverture-texte { opacity: 1; }
+
+@media (orientation: portrait), (max-width: 820px) {
+  .ouverture-texte { left: var(--gouttiere); right: var(--gouttiere); top: auto; bottom: 24px; width: auto; transform: none; }
+  .ouverture-texte h1 { font-size: clamp(1.7rem, 8vw, 2.6rem); }
+  .barre nav { display: none; }
+  .barre-commander { margin-left: auto; }
+}
+@media (max-width: 820px) {
+  .vitrine-tete { grid-template-columns: 1fr; }
+  .vitrine-tete { padding-right: 0; }
+  .vitrine { margin-top: 150px; }
+  .panthere-couchee { width: 56%; right: 4%; }
+  .etagere { display: grid; grid-template-columns: 1fr 1fr; }
+  .etagere::after { display: none; }
+  .plaque { grid-column: 1 / -1; min-width: 0; }
+  .casier { width: auto; }
+  .casier[data-large] { grid-column: 1 / -1; }
+  .boite { height: auto; aspect-ratio: var(--r); }
+  .casier:not([data-large]) .boite { aspect-ratio: .82; }
+  .etiquette { grid-template-columns: 1fr; padding: 12px; }
+  .etiquette .prix { text-align: left; }
+  .bon { grid-template-columns: 1fr; }
+  .bon > div + div { border-left: 0; border-top: 3px solid var(--encre); }
+}
+</style>
+</head>
+<body>
+<div class="porte" id="porte">
+  <div class="porte-cadre">
+    <p class="porte-titre">GOST 31</p>
+    <p class="porte-sous">Les goodies de l’antenne</p>
+    <button class="bouton-entrer" id="entrer" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/><path d="M19 6a8.5 8.5 0 0 1 0 12"/></svg>
+      Entrer
+    </button>
+    <button class="lien-muet" id="entrer-muet" type="button">Entrer sans le son</button>
+  </div>
+</div>
+<button class="bouton-passer" id="passer" type="button" hidden>Passer l’intro</button>
+
+<header class="barre" id="barre">
+  <a class="barre-logo" href="#haut" aria-label="GOST 31, retour en haut"><img src="assets/logo.png" alt="" width="38" height="38">GOST 31</a>
+  <nav aria-label="Rayons" id="nav"></nav>
+  <a class="barre-commander" href="#commander">Commander</a>
+</header>
+
+<main id="haut">
+  <section class="ouverture" aria-label="Accueil">
+    <div class="scene" id="scene"><svg class="trame" id="trame" viewBox="0 0 1600 900" preserveAspectRatio="none" aria-hidden="true"></svg></div>
+    <div class="ouverture-texte" id="ouverture-texte">
+      <h1>Les goodies de GOST 31</h1>
+      <p>Un objet à votre image, et une petite aide pour nos projets : chaque achat finance nos actions de l’année.</p>
+      <div class="ouverture-actions">
+        <a class="bouton-bleu" href="#vitrine">Ouvrir la vitrine</a>
+        <a class="bouton-blanc" href="#commander">Commander</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="vitrine-section" id="vitrine" aria-labelledby="titre-vitrine">
+    <div class="vitrine-tete">
+      <h2 id="titre-vitrine">La vitrine</h2>
+      <p>Tous les goodies de l’antenne, rangés casier par casier, avec leur prix.</p>
+    </div>
+    <div class="vitrine" id="meuble">
+      <img class="panthere-couchee" src="assets/panthere-seule.png" alt="" width="700" height="318">
+    </div>
+  </section>
+
+  <section class="commander" id="commander" aria-labelledby="titre-commander">
+    <div class="bon">
+      <div>
+        <h2 id="titre-commander">Bon de commande</h2>
+        <ol class="etapes">
+          <li><span><strong>Choisissez</strong> vos goodies et les quantités.</span></li>
+          <li><span><strong>Écrivez-nous</strong> par e-mail avec votre nom et votre commande.</span></li>
+          <li><span><strong>Nous vous répondons</strong> pour confirmer le total et organiser la remise.</span></li>
+        </ol>
+        <p class="note">Pas de paiement en ligne : le règlement se fait à la remise de votre commande.</p>
+      </div>
+      <div>
+        <p class="champ-titre">Notre adresse e-mail</p>
+        <code class="adresse" id="adresse"></code>
+        <div class="boutons-mail">
+          <button class="bouton-blanc" type="button" id="copier" aria-controls="adresse">Copier l’adresse</button>
+          <a class="bouton-rouge" id="mailto" href="#">Écrire le message</a>
+        </div>
+        <p class="champ-titre" style="margin-top:26px">Exemple de message</p>
+        <p class="modele" id="modele" style="margin-top:10px"></p>
+      </div>
+    </div>
+    <footer class="pied">
+      <span>© GOST 31 · Une question ? Écrivez-nous à l’adresse ci-dessus.</span>
+      <button type="button" id="revoir">Revoir l’intro</button>
+    </footer>
+  </section>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+<script src="shared/catalogue.js"></script>
+<script src="shared/son.js"></script>
+<script src="shared/panthere.js"></script>
+<script>
+(function () {
+  gsap.registerPlugin(ScrollTrigger);
+  var reduit = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduit) document.documentElement.classList.add('sans-mouvement');
+  var NS = 'http://www.w3.org/2000/svg';
+
+  // Les étagères de la vitrine
+  var C = {}; CATALOGUE.forEach(function (c) { C[c.id] = c; });
+  var ETAGERES = [
+    { id: 'tshirts', titre: 'T-shirts', sous: '4 modèles · 15 €', teinte: 'bleu', h: '', produits: C.tshirts.produits },
+    { id: 'casquettes', titre: 'Casquettes', sous: '4 modèles · 20 €', teinte: 'rouge', h: 'petit', produits: C.casquettes.produits },
+    { id: 'hiver', titre: 'Pulls et doudoune', sous: 'Pulls à capuche 50 € · doudoune 50 €', teinte: 'encre', h: 'grand', produits: C.pulls.produits.concat(C.doudoune.produits) },
+    { id: 'detente', titre: 'Serviette et pétanque', sous: 'Serviette 30 € · boules 75 €', teinte: 'gris', h: 'grand', produits: C.serviette.produits.concat(C.petanque.produits) },
+    { id: 'cave', titre: 'La cave', sous: 'Vins, champagne et rhum', teinte: 'rouge', h: 'haut', produits: C.cave.produits, alcool: true }
+  ];
+  var meuble = document.getElementById('meuble');
+  meuble.insertAdjacentHTML('beforeend', ETAGERES.map(function (e) {
+    return '<div class="etagere" id="etagere-' + e.id + '" data-h="' + e.h + '" role="group" aria-labelledby="t-' + e.id + '">' +
+      '<div class="plaque" data-teinte="' + e.teinte + '"><h2 id="t-' + e.id + '">' + e.titre + '</h2><div><p>' + e.sous + '</p>' +
+      (e.alcool ? '<p class="mention" style="margin-top:10px">' + MENTION_ALCOOL + '</p>' : '') + '</div></div>' +
+      e.produits.map(function (p) {
+        var r = (p.w / p.h).toFixed(3);
+        return '<article class="casier" data-teinte="' + e.teinte + '" style="--r:' + r + '"' + (p.w / p.h > 1.2 ? ' data-large' : '') + '>' +
+          '<div class="boite"><img src="assets/produits/' + p.img + '" alt="' + p.nom + '" width="' + p.w + '" height="' + p.h + '" loading="lazy">' +
+          '<svg class="parois" aria-hidden="true"><polygon class="p-haut"/><polygon class="p-gauche"/><polygon class="p-droite"/><polygon class="p-bas"/><rect class="ouverture-trait"/></svg></div>' +
+          '<div class="etiquette"><h3>' + p.nom + '</h3><p class="prix">' + Outils.prix(p.prix) + '<small>' + p.unite + '</small></p><p class="desc">' + p.desc + '</p></div></article>';
+      }).join('') + '</div>';
+  }).join(''));
+  document.getElementById('nav').innerHTML = ETAGERES.map(function (e) { return '<a href="#etagere-' + e.id + '">' + e.titre + '</a>'; }).join('');
+
+  // Les parois en perspective inversée : l'ouverture est devant, les parois s'évasent vers le fond.
+  var casiers = [].slice.call(document.querySelectorAll('.casier')).map(function (el) {
+    var svg = el.querySelector('.parois');
+    return { el: el, svg: svg, p: svg.querySelectorAll('polygon'), r: svg.querySelector('rect'), w: 0, h: 0, ouv: reduit ? 0.085 : 0.5 };
+  });
+  function dessiner(c) {
+    var w = c.w, h = c.h; if (!w || !h) return;
+    var i = Math.min(w, h) * c.ouv, pts = function (a) { return a.map(function (q) { return q[0].toFixed(1) + ',' + q[1].toFixed(1); }).join(' '); };
+    c.svg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
+    c.p[0].setAttribute('points', pts([[0, 0], [w, 0], [w - i, i], [i, i]]));
+    c.p[1].setAttribute('points', pts([[0, 0], [i, i], [i, h - i], [0, h]]));
+    c.p[2].setAttribute('points', pts([[w, 0], [w, h], [w - i, h - i], [w - i, i]]));
+    c.p[3].setAttribute('points', pts([[0, h], [i, h - i], [w - i, h - i], [w, h]]));
+    c.r.setAttribute('x', i); c.r.setAttribute('y', i); c.r.setAttribute('width', Math.max(0, w - 2 * i)); c.r.setAttribute('height', Math.max(0, h - 2 * i));
+  }
+  var ro = new ResizeObserver(function (entrees) {
+    entrees.forEach(function (en) {
+      var c = casiers.find(function (k) { return k.svg.parentNode === en.target; });
+      if (c) { c.w = en.contentRect.width; c.h = en.contentRect.height; dessiner(c); }
+    });
+  });
+  casiers.forEach(function (c) { ro.observe(c.el.querySelector('.boite')); });
+  // Au survol, le casier s'ouvre davantage vers vous.
+  casiers.forEach(function (c) {
+    var ouvrir = function () { c.repos = c.repos == null ? c.ouv : c.repos; gsap.to(c, { ouv: 0.03, duration: 0.5, ease: 'expo.out', onUpdate: dessiner, onUpdateParams: [c], overwrite: 'auto' }); c.el.style.setProperty('--zoom', 1.05); };
+    var fermer = function () { gsap.to(c, { ouv: 0.085, duration: 0.6, ease: 'expo.out', onUpdate: dessiner, onUpdateParams: [c], overwrite: 'auto' }); c.el.style.setProperty('--zoom', 1); };
+    c.el.addEventListener('pointerenter', ouvrir); c.el.addEventListener('pointerleave', fermer);
+    c.el.tabIndex = 0; c.el.addEventListener('focus', ouvrir); c.el.addEventListener('blur', fermer);
+  });
+
+  // Commande
+  var mail = COMMANDE.mail;
+  document.getElementById('adresse').textContent = mail;
+  document.getElementById('copier').setAttribute('data-copier', mail);
+  document.getElementById('mailto').href = Outils.mailto();
+  document.getElementById('modele').textContent = COMMANDE.modele;
+  Outils.brancherCopie();
+
+  var lenis = new Lenis({ lerp: reduit ? 1 : 0.09, smoothWheel: true });
+  lenis.on('scroll', ScrollTrigger.update);
+  gsap.ticker.add(function (t) { lenis.raf(t * 1000); });
+  gsap.ticker.lagSmoothing(0);
+  lenis.stop();
+  document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      var id = a.getAttribute('href'); if (id.length < 2) return;
+      var cible = document.querySelector(id); if (!cible) return;
+      e.preventDefault(); lenis.scrollTo(cible, { offset: -70, duration: 1.4 });
+    });
+  });
+
+  // La trame de la vitrine, dessinée à l'encre au moment du rugissement.
+  var trame = document.getElementById('trame');
+  (function decouper(x, y, w, h, n) {
+    if (n === 0 || w < 170 || h < 120) {
+      var r = document.createElementNS(NS, 'rect');
+      r.setAttribute('x', x + 6); r.setAttribute('y', y + 6); r.setAttribute('width', w - 12); r.setAttribute('height', h - 12); r.setAttribute('pathLength', 1);
+      trame.appendChild(r); return;
+    }
+    var vert = w / h > 1.3 ? true : (w / h < 0.8 ? false : (n % 2 === 0));
+    var k = [0.38, 0.5, 0.62, 0.44, 0.56][Math.floor(x * 7 + y * 3 + n) % 5];
+    if (vert) { decouper(x, y, w * k, h, n - 1); decouper(x + w * k, y, w * (1 - k), h, n - 1); }
+    else { decouper(x, y, w, h * k, n - 1); decouper(x, y + h * k, w, h * (1 - k), n - 1); }
+  })(40, 40, 1520, 820, 4);
+  var traits = trame.querySelectorAll('rect');
+  gsap.set(traits, { strokeDasharray: 1, strokeDashoffset: 1 });
+
+  var paysage = function () { return window.innerWidth / window.innerHeight > 1.05 && window.innerWidth > 820; };
+  var cadreFinal = paysage() ? '-60 -40 1600 773' : '-60 -40 820 1180';
+  var rig = Panthere.creer(document.getElementById('scene'), { src: 'assets/logo-hd.png', ondes: '#0b0d10', prefixe: 'c' });
+  var texte = document.getElementById('ouverture-texte');
+  var tl = Panthere.intro(rig, {
+    cadreFinal: cadreFinal,
+    surRugit: function (tl, t) {
+      tl.to(traits, { strokeDashoffset: 0, duration: 0.9, ease: 'power2.out', stagger: { each: 0.025, from: 'center' } }, t + 0.1);
+      tl.to(trame, { opacity: 0.16, duration: 1.2 }, t + 1.6);
+    },
+    surLogo: function (tl, t) {
+      tl.fromTo(texte, { opacity: 0, x: 30 }, { opacity: 1, x: 0, duration: 0.9, ease: 'expo.out' }, t + 0.2);
+    }
+  });
+  window.__tl = tl;
+
+  function ouvrirSite() { document.getElementById('barre').classList.add('visible'); lenis.start(); ScrollTrigger.refresh(); }
+  Panthere.porte({ porte: document.getElementById('porte'), entrer: document.getElementById('entrer'), muet: document.getElementById('entrer-muet'), passer: document.getElementById('passer'), tl: tl, apres: ouvrirSite });
+  document.getElementById('revoir').addEventListener('click', function () {
+    lenis.scrollTo(0, { immediate: true }); lenis.stop();
+    tl.eventCallback('onComplete', function () { lenis.start(); }); tl.play(0);
+  });
+
+  if (reduit) return;
+
+  // Chaque étagère s'ouvre quand elle arrive : les casiers passent de fermés à ouverts, un par un.
+  document.querySelectorAll('.etagere').forEach(function (et) {
+    var cs = casiers.filter(function (c) { return et.contains(c.el); });
+    var t = gsap.timeline({ scrollTrigger: { trigger: et, start: 'top 92%', end: 'top 38%', scrub: 0.6 } });
+    t.fromTo(et.querySelector('.plaque'), { clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0% 0 0)', duration: 0.5, ease: 'power2.out' }, 0);
+    cs.forEach(function (c, k) {
+      t.fromTo(c, { ouv: 0.5 }, { ouv: 0.085, duration: 0.7, ease: 'power3.out', onUpdate: dessiner, onUpdateParams: [c], immediateRender: false }, 0.1 + k * 0.12);
+    });
+  });
+  // La panthère se pose sur le haut du meuble.
+  gsap.fromTo('.panthere-couchee', { xPercent: 40, opacity: 0 }, { xPercent: 0, opacity: 1, ease: 'power3.out', scrollTrigger: { trigger: '#meuble', start: 'top 95%', end: 'top 55%', scrub: 0.6 } });
+
+  document.querySelectorAll('.etagere').forEach(function (et) {
+    var lien = document.querySelector('.barre nav a[href="#' + et.id + '"]');
+    ScrollTrigger.create({ trigger: et, start: 'top 55%', end: 'bottom 55%', onToggle: function (s) { if (lien) lien.setAttribute('aria-current', s.isActive ? 'true' : 'false'); } });
+  });
+})();
+</script>
+</body>
+</html>

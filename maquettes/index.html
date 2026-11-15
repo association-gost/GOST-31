@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GOST 31 · Maquettes</title>
+<style>
+:root { --fond: #0c0d10; --texte: #f1f1ef; --gris: #a3a6ad; --trait: #2a2c33; --rouge: #e3142f; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--fond); color: var(--texte); font: 16px/1.55 system-ui, sans-serif; padding: clamp(24px, 6vw, 80px) clamp(16px, 5vw, 64px); }
+h1 { margin: 0; font-size: clamp(1.8rem, 4vw, 2.8rem); line-height: 1.05; }
+p.intro { color: var(--gris); max-width: 60ch; margin: 14px 0 0; }
+ol { list-style: none; padding: 0; margin: 48px 0 0; display: grid; gap: 0; border-top: 1px solid var(--trait); max-width: 980px; }
+li a { display: grid; grid-template-columns: 64px 1fr auto; gap: 18px; align-items: baseline; padding: 26px 0; border-bottom: 1px solid var(--trait); text-decoration: none; color: inherit; }
+li a:hover h2 { color: var(--rouge); }
+.num { font-size: 2.2rem; font-weight: 800; color: var(--gris); font-variant-numeric: tabular-nums; }
+h2 { margin: 0; font-size: 1.5rem; transition: color .2s; }
+li p { margin: 6px 0 0; color: var(--gris); max-width: 62ch; }
+.ouvrir { color: var(--gris); font-size: .9rem; white-space: nowrap; }
+:focus-visible { outline: 2px solid var(--texte); outline-offset: 4px; }
+</style>
+</head>
+<body>
+<h1>GOST 31 : trois maquettes du site</h1>
+<p class="intro">Même catalogue, même intro de la panthère, trois univers. Cliquez sur « Entrer » pour lancer l’intro avec le son.</p>
+<ol>
+  <li><a href="1-defile.html"><span class="num">1</span><div><h2>Le Défilé</h2><p>Ciel de 14 Juillet. La patrouille passe quand RAID se pose ; les produits défilent de droite à gauche, la journée tombe jusqu’au feu d’artifice de la commande.</p></div><span class="ouvrir">Ouvrir →</span></a></li>
+  <li><a href="2-generique.html"><span class="num">2</span><div><h2>Générique</h2><p>Salle noire de cinéma. Panthère en contre-jour, encres tricolores au rugissement, un plan cinémascope par catégorie, le catalogue en générique de fin.</p></div><span class="ouvrir">Ouvrir →</span></a></li>
+  <li><a href="3-vitrine.html"><span class="num">3</span><div><h2>La Vitrine</h2><p>Meuble dessiné à l’encre, panthère couchée dessus. Des casiers peints aux couleurs du RAID s’ouvrent vers vous au défilement ; bon de commande imprimé.</p></div><span class="ouvrir">Ouvrir →</span></a></li>
+</ol>
+</body>
+</html>

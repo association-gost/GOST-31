@@ -1,0 +1,235 @@
+// La panthère du logo, animée. Le logo officiel (700 × 693) est découpé en morceaux le long
+// de ses propres traits blancs : corps, tête, patte avant allongée, patte qui pend sur le rebord,
+// patte arrière repliée ; plus les lettres R-A-I-D, la croix occitane et les filets.
+// Elle s'avance en rampant depuis la gauche, rugit face à nous, pose la patte sur le rebord :
+// elle est alors exactement dans la pose du logo, et l'on passe au logo par un fondu.
+// La « caméra » est le viewBox du SVG.
+window.Panthere = (function () {
+  var NS = 'http://www.w3.org/2000/svg';
+  var W = 700, H = 693;
+  var CADRES = {
+    final: '-60 -50 820 793',
+    marche: '0 -170 720 640',
+    tete: '350 -12 190 186'
+  };
+  // Contours des morceaux (repère du logo). Les morceaux mobiles débordent un peu dans le corps
+  // du côté de leur articulation : au repos les pixels se superposent, en mouvement il n'y a pas de jour.
+  var BRAS = 'M466 185L459 195L454 204L470 211L500 220L550 229L562 236L566 242L572 252L578 262L700 262L700 140L505 140L500 176Z';
+  var BRAS_LARGE = 'M458 180L459 195L454 204L470 211L500 220L550 229L562 236L566 242L572 252L578 262L700 262L700 140L505 140L497 169Z';
+  var PATTE = 'M498 258H612V332H498Z';
+  var PATTE_LARGE = 'M498 251H578L590 262L612 290V332H498Z';
+  var PIED = 'M228 214L250 222L283 212L297 214L311 227L318 244L318 268L212 268L216 241Z';
+  var PIED_LARGE = 'M224 209L250 217L283 207L300 209L315 224L322 244L322 268L198 268L203 241Z';
+  var TETE_HAUT = 'M355 0H540V115H355Z';
+  var MASQUES = {
+    tete: { d: 'M355 0H540V138H355Z' },
+    bras: { d: BRAS_LARGE },
+    patte: { d: PATTE_LARGE },
+    pied: { d: PIED_LARGE },
+    croix: { d: 'M0 272H114V572H0Z' },
+    R: { d: 'M114 272H262V602H114Z' },
+    A: { d: 'M262 272H446V693H262Z' },
+    i: { d: 'M446 272H520V630H446Z' },
+    D: { d: 'M522 314H596V272H700V630H522Z' },
+    bleu: { d: 'M0 634H250V668H0Z' },
+    rouge: { d: 'M455 634H700V668H455Z' }
+  };
+
+  function el(nom, attrs, parent) {
+    var e = document.createElementNS(NS, nom);
+    for (var k in attrs) if (attrs[k] !== undefined && attrs[k] !== null) e.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+  function morceau(src, idMasque, parent, classe, parMasque) {
+    var g = el('g', { 'class': classe }, parent);
+    var a = { href: src, x: 0, y: 0, width: W, height: H, preserveAspectRatio: 'none' };
+    a[parMasque ? 'mask' : 'clip-path'] = 'url(#' + idMasque + ')';
+    el('image', a, g);
+    return g;
+  }
+
+  // Options : src (logo des morceaux), final (logo du fondu), srcLettres, rim (liseré de lumière),
+  // ondes (couleur des ondes), yeux (couleur des yeux allumés), prefixe (ids uniques).
+  function creer(conteneur, o) {
+    o = o || {};
+    var p = o.prefixe || 'pt';
+    var svg = el('svg', { 'class': 'panthere-svg', viewBox: CADRES.marche, preserveAspectRatio: 'xMidYMid meet', role: 'img', 'aria-label': 'Logo GOST 31 : panthère couchée sur le mot RAID' }, conteneur);
+    var defs = el('defs', {}, svg);
+    Object.keys(MASQUES).forEach(function (k) {
+      var cp = el('clipPath', { id: p + '-' + k, clipPathUnits: 'userSpaceOnUse' }, defs);
+      el('path', { d: MASQUES[k].d }, cp);
+    });
+    // Le corps : toute la panthère, moins les morceaux qui bougent.
+    var mc = el('mask', { id: p + '-corps', maskUnits: 'userSpaceOnUse', x: -50, y: -50, width: 800, height: 400 }, defs);
+    el('path', { d: 'M0 0H700V268H0Z', fill: '#fff' }, mc);
+    [TETE_HAUT, BRAS, PATTE, PIED].forEach(function (d) { el('path', { d: d, fill: '#000' }, mc); });
+
+    var fFlou = el('filter', { id: p + '-flou', x: '-60%', y: '-20%', width: '220%', height: '140%' }, defs);
+    var flou = el('feGaussianBlur', { stdDeviation: '0 0' }, fFlou);
+    var fLueur = el('filter', { id: p + '-lueur', x: '-100%', y: '-100%', width: '300%', height: '300%' }, defs);
+    el('feGaussianBlur', { stdDeviation: '2.2' }, fLueur);
+    if (o.rim) {
+      var fr = el('filter', { id: p + '-rim', x: '-10%', y: '-10%', width: '120%', height: '120%' }, defs);
+      el('feOffset', { 'in': 'SourceAlpha', dx: 5, dy: 4, result: 'dec' }, fr);
+      el('feComposite', { 'in': 'SourceAlpha', in2: 'dec', operator: 'out', result: 'bord' }, fr);
+      el('feGaussianBlur', { 'in': 'bord', stdDeviation: 1.1, result: 'bordf' }, fr);
+      el('feFlood', { 'flood-color': o.rim, 'flood-opacity': 1 }, fr);
+      el('feComposite', { in2: 'bordf', operator: 'in', result: 'lum' }, fr);
+      var m = el('feMerge', {}, fr);
+      el('feMergeNode', { 'in': 'SourceGraphic' }, m);
+      el('feMergeNode', { 'in': 'lum' }, m);
+    }
+
+    var derriere = el('g', { 'class': 'pt-derriere' }, svg);
+    var srcL = o.srcLettres || o.src;
+    var gLettres = el('g', { 'class': 'pt-lettres' }, svg);
+    var lettres = {};
+    ['croix', 'R', 'A', 'i', 'D'].forEach(function (k) { lettres[k] = morceau(srcL, p + '-' + k, gLettres, 'pt-' + k); });
+    var barres = { bleu: morceau(srcL, p + '-bleu', gLettres, 'pt-bleu'), rouge: morceau(srcL, p + '-rouge', gLettres, 'pt-rouge') };
+
+    var panthere = el('g', { 'class': 'pt-panthere', filter: 'url(#' + p + '-flou)' }, svg);
+    var pose = el('g', { 'class': 'pt-pose', filter: o.rim ? 'url(#' + p + '-rim)' : null }, panthere);
+    var pied = morceau(o.src, p + '-pied', pose, 'pt-pied');
+    var patte = morceau(o.src, p + '-patte', pose, 'pt-patte');
+    var corps = morceau(o.src, p + '-corps', pose, 'pt-corps', true);
+    var bras = morceau(o.src, p + '-bras', pose, 'pt-bras');
+    var tete = el('g', { 'class': 'pt-tete' }, pose);
+    // Les yeux du logo sont transparents : une lueur posée derrière la tête les allume.
+    var yeux = el('g', { 'class': 'pt-yeux', opacity: 0, filter: 'url(#' + p + '-lueur)' }, tete);
+    el('ellipse', { cx: 409, cy: 45, rx: 11, ry: 8, fill: o.yeux || '#ffd66b' }, yeux);
+    el('ellipse', { cx: 447, cy: 45, rx: 13, ry: 7, fill: o.yeux || '#ffd66b' }, yeux);
+    morceau(o.src, p + '-tete', tete, 'pt-tete-img');
+    var gueule = el('g', { 'class': 'pt-gueule' }, tete);
+    var croc = '#f3efe4';
+    [
+      ['M396 104C408 99 434 99 446 104C448 118 438 138 421 139C404 138 394 118 396 104Z', '#5c0712'],
+      ['M405 112C410 108 432 108 437 112C437 124 430 133 421 133C412 133 405 124 405 112Z', '#160104'],
+      ['M408 132C414 126 428 126 434 132C428 137 414 137 408 132Z', '#a3182b'],
+      ['M402.5 104Q405 113 408.5 122Q410.5 112 412.5 104.5Z', croc],
+      ['M429.5 104.5Q431.5 112 433.5 122Q437 113 439.5 104Z', croc],
+      ['M414 104.5L416 109L418 104.5Z', croc], ['M419.5 104.5L421 108.5L422.5 104.5Z', croc], ['M424 104.5L426 109L428 104.5Z', croc],
+      ['M406 135Q408 128 410.5 121.5Q412 129 413.5 136Z', croc],
+      ['M428.5 136Q430 129 431.5 121.5Q434 128 436 135Z', croc]
+    ].forEach(function (d) { el('path', { d: d[0], fill: d[1] }, gueule); });
+
+    var gOndes = el('g', { 'class': 'pt-ondes', fill: 'none', stroke: o.ondes || '#fff', 'pointer-events': 'none' }, svg);
+    var ondes = [0, 1, 2, 3].map(function () { return el('circle', { cx: 421, cy: 112, r: 1, 'stroke-width': 2, opacity: 0 }, gOndes); });
+    var logoFinal = el('image', { 'class': 'pt-final', href: o.final || o.src, x: 0, y: 0, width: W, height: H, opacity: 0 }, svg);
+    var devant = el('g', { 'class': 'pt-devant' }, svg);
+
+    return { svg: svg, defs: defs, derriere: derriere, devant: devant, panthere: panthere, pose: pose, corps: corps,
+      tete: tete, bras: bras, patte: patte, pied: pied, yeux: yeux, gueule: gueule, lettres: lettres, barres: barres,
+      ondes: ondes, logoFinal: logoFinal, flou: flou, cadres: CADRES, prefixe: p };
+  }
+
+  // La séquence. Crochets : surRugit(tl, t), surLettres(tl, t), surLogo(tl, t).
+  function intro(r, o) {
+    o = o || {};
+    var cadreFinal = o.cadreFinal || CADRES.final;
+    var L = r.lettres, tl = gsap.timeline({ paused: true });
+    var hautes = [L.R, L.A, L.i, L.D];
+
+    gsap.set(r.svg, { attr: { viewBox: CADRES.marche }, x: 0, y: 0 });
+    gsap.set(r.panthere, { x: -1250, opacity: 1 });
+    gsap.set([r.pose, r.tete, r.bras, r.pied], { x: 0, y: 0, rotation: 0 });
+    gsap.set(r.patte, { opacity: 0, rotation: -70, svgOrigin: '545 256' });
+    gsap.set(hautes, { y: 300, opacity: 0 });
+    gsap.set(L.croix, { rotation: -200, scale: 0.3, opacity: 0, svgOrigin: '57 420' });
+    gsap.set(r.barres.bleu, { scaleX: 0, svgOrigin: '250 651' });
+    gsap.set(r.barres.rouge, { scaleX: 0, svgOrigin: '455 651' });
+    gsap.set(r.gueule, { scaleY: 0, svgOrigin: '421 102' });
+    gsap.set([r.yeux, r.logoFinal, r.ondes], { opacity: 0 });
+    gsap.set([L.croix, hautes, r.barres.bleu, r.barres.rouge], { clearProps: 'filter' });
+
+    // 1. Elle arrive de la gauche en rampant : la patte avant allongée avance, la patte arrière
+    //    pousse, le dos ondule ; la tête reste fixe, elle nous regarde.
+    var pas = { phi: 0, amp: 1 };
+    function demarche() {
+      var s = Math.sin(pas.phi), a = pas.amp;
+      gsap.set(r.pose, { y: -4 * Math.abs(s) * a, rotation: 0.6 * s * a, svgOrigin: '300 230' });
+      gsap.set(r.bras, { rotation: (-6 * Math.max(0, s) + 1.5 * s) * a, x: 7 * s * a, svgOrigin: '480 182' });
+      gsap.set(r.pied, { x: -10 * s * a, y: -4 * Math.max(0, -s) * a });
+    }
+    tl.addLabel('arrivee', 0);
+    tl.fromTo(r.flou, { attr: { stdDeviation: '18 0' } }, { attr: { stdDeviation: '0 0' }, duration: 2.2, ease: 'power2.in' }, 0.1);
+    tl.to(r.panthere, { x: 0, duration: 3.3, ease: 'power2.out' }, 0.1);
+    tl.to(pas, { phi: Math.PI * 2 * 5, duration: 3.3, ease: 'power1.out', onUpdate: demarche }, 0.1);
+    tl.to(pas, { amp: 0, duration: 0.8, ease: 'power1.inOut' }, 2.6);
+
+    // 2. Les yeux s'allument, gros plan sur la tête.
+    tl.addLabel('yeux', 3.3);
+    tl.to(r.yeux, { keyframes: [{ opacity: 1, duration: 0.06 }, { opacity: 0.25, duration: 0.07 }, { opacity: 1, duration: 0.12 }] }, 3.3);
+    tl.to(r.svg, { attr: { viewBox: CADRES.tete }, duration: 0.85, ease: 'expo.inOut' }, 3.55);
+
+    // 3. Le rugissement : la gueule s'ouvre, l'écran tremble, ondes de choc.
+    var T = 4.45;
+    tl.addLabel('rugit', T);
+    tl.to(r.gueule, { scaleY: 1, duration: 0.16, ease: 'back.out(2.2)' }, T);
+    tl.to(r.tete, { rotation: -3, svgOrigin: '440 136', duration: 0.2, ease: 'power3.out' }, T);
+    tl.to(r.svg, { attr: { viewBox: '330 -34 230 225' }, duration: 1.6, ease: 'power1.out' }, T);
+    tl.to(r.svg, { x: 'random(-16,16)', y: 'random(-11,11)', duration: 0.05, repeat: 25, repeatRefresh: true, ease: 'none' }, T + 0.05);
+    tl.to(r.svg, { x: 0, y: 0, duration: 0.12 }, T + 1.36);
+    r.ondes.forEach(function (c, k) {
+      tl.fromTo(c, { attr: { r: 30, 'stroke-width': 2.2 }, opacity: 0.55 },
+        { attr: { r: 360, 'stroke-width': 0.3 }, opacity: 0, duration: 1.3, ease: 'expo.out', immediateRender: false }, T + 0.08 + k * 0.16);
+    });
+    if (o.surRugit) o.surRugit(tl, T);
+
+    // 4. Elle referme la gueule, la caméra recule ; elle pose la patte sur le rebord : c'est la pose du logo.
+    var R = T + 1.75;
+    tl.addLabel('recul', R);
+    tl.to(r.gueule, { scaleY: 0, duration: 0.35, ease: 'power2.in' }, R);
+    tl.to(r.tete, { rotation: 0, duration: 0.6, ease: 'power2.inOut' }, R);
+    tl.to(r.yeux, { opacity: 0, duration: 0.8 }, R + 0.6);
+    tl.to(r.svg, { attr: { viewBox: cadreFinal }, duration: 1.25, ease: 'expo.inOut' }, R + 0.1);
+    tl.to(r.patte, { opacity: 1, rotation: 0, duration: 0.75, ease: 'back.out(1.6)', svgOrigin: '545 256' }, R + 0.55);
+
+    // 5. RAID surgit sous elle, la croix occitane tourne en place, les filets se tracent.
+    var Ls = R + 1.15;
+    tl.addLabel('lettres', Ls);
+    tl.to(hautes, { y: 0, opacity: 1, duration: 0.6, ease: 'expo.out', stagger: 0.11 }, Ls);
+    tl.to(L.croix, { rotation: 0, scale: 1, opacity: 1, duration: 1.0, ease: 'expo.out' }, Ls + 0.3);
+    tl.to([r.barres.bleu, r.barres.rouge], { scaleX: 1, duration: 0.8, ease: 'expo.inOut' }, Ls + 0.55);
+    if (o.surLettres) o.surLettres(tl, Ls);
+
+    // 6. Fondu vers le logo officiel.
+    var F = Ls + 1.45;
+    tl.addLabel('logo', F);
+    tl.to(r.logoFinal, { opacity: 1, duration: 0.9, ease: 'power2.inOut' }, F);
+    tl.to([r.panthere, r.lettres.croix, hautes, r.barres.bleu, r.barres.rouge], { opacity: 0, duration: 0.9, ease: 'power2.inOut' }, F + 0.05);
+    if (o.surLogo) o.surLogo(tl, F);
+    tl.addLabel('fin', F + 1.0);
+    return tl;
+  }
+
+  // Lancement : l'intro démarre seule une fois les images chargées ; « Passer l'intro » et Échap la sautent.
+  // o.construire() fabrique l'intro, o.apres() ouvre le site.
+  function porte(o) {
+    var reduit = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var fini = false, tl = null;
+    function obtenir() { if (!tl) tl = o.construire ? o.construire() : o.tl; return tl; }
+    function terminer() {
+      if (fini) return; fini = true;
+      if (o.passer) o.passer.hidden = true;
+      document.removeEventListener('keydown', echap);
+      o.apres && o.apres();
+    }
+    function echap(e) { if (e.key === 'Escape') passer(); }
+    function passer() { obtenir().progress(1); terminer(); }
+    function lancer() {
+      var t = obtenir();
+      if (o.passer) { o.passer.hidden = false; o.passer.addEventListener('click', passer); }
+      document.addEventListener('keydown', echap);
+      o.avant && o.avant();
+      t.eventCallback('onComplete', terminer);
+      t.play(0);
+    }
+    if (reduit) { o.avant && o.avant(); obtenir().progress(1); terminer(); return; }
+    obtenir(); // pose l'état de départ tout de suite (panthère hors champ, lettres cachées)
+    if (document.readyState === 'complete') setTimeout(lancer, 250);
+    else window.addEventListener('load', function () { setTimeout(lancer, 250); });
+  }
+
+  return { creer: creer, intro: intro, porte: porte, CADRES: CADRES };
+})();

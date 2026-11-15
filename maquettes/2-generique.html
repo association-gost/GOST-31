@@ -215,6 +215,7 @@ a { color: inherit; text-underline-offset: .25em; }
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
 <script src="shared/catalogue.js"></script>
+<script src="assets/panthere-dessin/infos.js"></script>
 <script src="shared/panthere-logo.js"></script>
 <script>
 (function () {
@@ -271,8 +272,8 @@ a { color: inherit; text-underline-offset: .25em; }
 
   // La panthère en contre-jour, sous le projecteur.
   var rig = Panthere.creer(document.getElementById('scene'), {
-    src: 'assets/logo-hd.png', srcLettres: 'assets/logo-clair-hd.png', final: 'assets/logo-clair-hd.png',
-    rim: '#ffffff', yeux: '#ffb43a', ondes: '#ffffff', prefixe: 'b'
+    src: 'assets/logo-clair-hd.png', final: 'assets/logo-clair-hd.png',
+    yeux: '#ffb43a', prefixe: 'b'
   });
   // Encres tricolores derrière elle, au rugissement.
   var NS = 'http://www.w3.org/2000/svg';
@@ -309,7 +310,7 @@ a { color: inherit; text-underline-offset: .25em; }
   }
 
   function ouvrirSite() { document.getElementById('barre').classList.add('visible'); lenis.start(); ScrollTrigger.refresh(); }
-  Panthere.porte({ passer: document.getElementById('passer'), construire: construire, apres: ouvrirSite });
+  Panthere.porte({ passer: document.getElementById('passer'), construire: construire, attendre: Panthere.precharger(), apres: ouvrirSite });
   document.getElementById('revoir').addEventListener('click', function () {
     lenis.scrollTo(0, { immediate: true }); lenis.stop();
     tl.eventCallback('onComplete', function () { lenis.start(); }); tl.play(0);

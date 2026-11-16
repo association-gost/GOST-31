@@ -325,21 +325,8 @@ a { color: inherit; text-underline-offset: .25em; }
   var L = rig.lettres, hautes = [L.R, L.A, L.i, L.D];
   var tl = null, attente = null;
 
-  // Filtre « dessin au trait » : la panthère du logo en simple tracé blanc (contour + traits intérieurs),
-  // dont le remplissage blanc monte ensuite progressivement.
-  var NS = 'http://www.w3.org/2000/svg', fTrait = document.createElementNS(NS, 'filter');
-  fTrait.setAttribute('id', 'b-trait'); ['x', 'y'].forEach(function (a) { fTrait.setAttribute(a, '-5%'); });
-  fTrait.setAttribute('width', '110%'); fTrait.setAttribute('height', '110%');
-  fTrait.innerHTML = '<feMorphology in="SourceAlpha" operator="dilate" radius="2.6" result="dil"/>' +
-    '<feComposite in="dil" in2="SourceAlpha" operator="out" result="bord"/>' +
-    '<feFlood flood-color="#f2f2f0"/><feComposite in2="bord" operator="in" result="trait"/>' +
-    '<feComponentTransfer in="SourceGraphic" result="plein"><feFuncA type="linear" slope="0"/></feComponentTransfer>' +
-    '<feMerge><feMergeNode in="plein"/><feMergeNode in="trait"/></feMerge>';
-  rig.defs.appendChild(fTrait);
-  var traitRayon = fTrait.querySelector('feMorphology'), traitPlein = fTrait.querySelector('feFuncA');
   function etatInitial() {
-    rig.pose.setAttribute('filter', 'url(#b-trait)');
-    traitRayon.setAttribute('radius', '2.6'); traitPlein.setAttribute('slope', '0');
+    gsap.set(rig.svg, { x: 0, y: 0, scale: 1, transformOrigin: '0 0' });
     gsap.set(rig.svg, { attr: { viewBox: cadreFinal }, x: 0, y: 0 });
     gsap.set([rig.dessin, rig.yeux, rig.gueule, rig.ondes, rig.logoFinal, rig.panthere, '#projecteur', texte], { opacity: 0 });
     gsap.set([rig.corps, rig.bras, rig.pied, rig.tete], { opacity: 1, x: 0, y: 0, rotation: 0 });
@@ -365,31 +352,32 @@ a { color: inherit; text-underline-offset: .25em; }
         attente = requestAnimationFrame(guetter);
       })();
     }, null, 0.01);
-    var cible = { x: 0, y: 0, scale: 1 };
+    var cible = { x: 0, y: 0, scale: 1 }, depart = { x: 0, y: 0, scale: 1 };
     function reprendre() {
       video.pause();
-      // La panthère de la vidéo va glisser jusqu'à la place exacte de la panthère du logo.
+      // Point d'ancrage : coin bas-gauche de la panthère, dans la vidéo et dans le logo (à sa place finale).
       var r = video.getBoundingClientRect(), s0 = Math.min(r.width / VID.w, r.height / VID.h), P = VID.panthere;
       var gauche = r.left + (r.width - VID.w * s0) / 2 + P[0] * s0, bas = r.top + (r.height - VID.h * s0) / 2 + P[3] * s0, larg = (P[2] - P[0]) * s0;
       var m = rig.svg.getScreenCTM(), pt = rig.svg.createSVGPoint();
       pt.x = 0; pt.y = 261; var A = pt.matrixTransform(m); pt.x = 674; var B = pt.matrixTransform(m);
-      var k = (B.x - A.x) / larg;
+      var k = (B.x - A.x) / larg, S = rig.svg.getBoundingClientRect();
+      // la vidéo va de sa place à celle du logo ; le logo part de la place de la vidéo et arrive chez lui :
+      // les deux mouvements sont identiques, la panthère du logo reste collée à celle de la vidéo.
       cible = { scale: k, x: A.x - r.left - (gauche - r.left) * k, y: A.y - r.top - (bas - r.top) * k };
+      depart = { scale: 1 / k, x: gauche - S.left - (A.x - S.left) / k, y: bas - S.top - (A.y - S.top) / k };
       tl.play();
     }
-    // 2. Sans coupure : la panthère de la vidéo glisse et rétrécit jusqu'à sa place dans le logo,
-    //    et devient en chemin la panthère du logo en tracé blanc, qui se remplit ensuite.
-    var T = 0.05;
+    // 2. D'une seule traite : la panthère rétrécit et monte jusqu'à sa place dans le logo, en blanchissant.
+    var T = 0.05, D = 1.5;
     tl.to(video, { x: function () { return cible.x; }, y: function () { return cible.y; }, scale: function () { return cible.scale; },
-      transformOrigin: '0 0', duration: 1.1, ease: 'power2.inOut', immediateRender: false }, T);
-    tl.to(rig.panthere, { opacity: 1, duration: 0.6, ease: 'sine.inOut' }, T + 0.55);
-    tl.to(video, { opacity: 0, duration: 0.5, ease: 'sine.in' }, T + 0.7);
-    tl.to(traitPlein, { attr: { slope: 1 }, duration: 0.9, ease: 'power2.inOut' }, T + 1.15);
-    tl.to(traitRayon, { attr: { radius: 0 }, duration: 0.8, ease: 'power2.in' }, T + 1.3);
-    tl.call(function () { rig.pose.removeAttribute('filter'); }, null, T + 2.15);
-    tl.to('#projecteur', { opacity: 0.55, duration: 1.2 }, T + 1.0);
+      transformOrigin: '0 0', duration: D, ease: 'power2.inOut', immediateRender: false }, T);
+    tl.fromTo(rig.svg, { x: function () { return depart.x; }, y: function () { return depart.y; }, scale: function () { return depart.scale; }, transformOrigin: '0 0' },
+      { x: 0, y: 0, scale: 1, transformOrigin: '0 0', duration: D, ease: 'power2.inOut', immediateRender: false }, T);
+    tl.to(rig.panthere, { opacity: 1, duration: D * 0.75, ease: 'sine.inOut' }, T + D * 0.12);
+    tl.to(video, { opacity: 0, duration: D * 0.7, ease: 'sine.inOut' }, T + D * 0.3);
+    tl.to('#projecteur', { opacity: 0.55, duration: 1.2 }, T + D * 0.6);
     // 3. RAID surgit sous elle, la croix tourne, les filets se tracent.
-    var Ls = T + 1.75;
+    var Ls = T + D - 0.1;
 
     tl.to(hautes, { y: 0, opacity: 1, duration: 0.6, ease: 'expo.out', stagger: 0.11 }, Ls);
     tl.to(rig.patte, { opacity: 1, duration: 0.5, ease: 'power2.out' }, Ls + 0.35);

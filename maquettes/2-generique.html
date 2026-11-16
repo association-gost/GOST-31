@@ -71,6 +71,7 @@ a { color: inherit; text-underline-offset: .25em; }
 .scene { position: absolute; inset: 0; }
 .projecteur { position: absolute; inset: 0; background: radial-gradient(ellipse 46% 34% at 50% 52%, rgba(255,255,255,.13), rgba(255,255,255,.03) 55%, transparent 75%); opacity: 0; }
 .panthere-svg { position: relative; width: 100%; height: 100%; display: block; overflow: visible; }
+.video-intro { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
 .ouverture-texte { position: absolute; left: 0; right: 0; bottom: max(40px, 6vh); display: grid; justify-items: center; gap: 14px; padding: 0 var(--gouttiere); text-align: center; opacity: 0; }
 .ouverture-texte .presente { font: 400 .72rem/1 var(--titre); letter-spacing: .5em; text-transform: uppercase; color: var(--gris); }
 .ouverture-texte h1 { font-size: clamp(1.25rem, 3vw, 2.4rem); letter-spacing: .22em; }
@@ -198,6 +199,7 @@ a { color: inherit; text-underline-offset: .25em; }
 <main id="haut">
   <section class="ouverture" aria-label="Accueil">
     <div class="scene" id="scene"><div class="projecteur" id="projecteur"></div></div>
+    <video class="video-intro" id="video-intro" src="assets/intro-panthere.mp4" muted playsinline preload="auto" aria-hidden="true"></video>
     <div class="ouverture-texte" id="ouverture-texte">
       <p class="presente">L’antenne GOST 31 présente</p>
       <h1>Les goodies de GOST 31</h1>
@@ -239,7 +241,6 @@ a { color: inherit; text-underline-offset: .25em; }
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
 <script src="shared/catalogue.js"></script>
-<script src="assets/panthere-2d/infos.js"></script>
 <script src="shared/panthere-logo.js"></script>
 <script>
 (function () {
@@ -309,45 +310,88 @@ a { color: inherit; text-underline-offset: .25em; }
     });
   });
 
-  // La panthère en contre-jour, sous le projecteur.
+  // L'intro : la vidéo de la panthère (marche, se couche), coupée juste avant son propre fondu vers le logo
+  // sur fond blanc ; la panthère du logo clair apparaît à sa place, la caméra recule et RAID se construit.
   var rig = Panthere.creer(document.getElementById('scene'), {
-    src: 'assets/logo-clair-hd.png', final: 'assets/logo-clair-hd.png',
-    yeux: '#ffb43a', prefixe: 'b'
+    src: 'assets/logo-clair-hd.png', final: 'assets/logo-clair-hd.png', prefixe: 'b'
   });
-  // Encres tricolores derrière elle, au rugissement.
-  var NS = 'http://www.w3.org/2000/svg';
-  var fEncre = document.createElementNS(NS, 'filter');
-  fEncre.setAttribute('id', 'b-encre'); fEncre.setAttribute('x', '-100%'); fEncre.setAttribute('y', '-100%'); fEncre.setAttribute('width', '300%'); fEncre.setAttribute('height', '300%');
-  fEncre.innerHTML = '<feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="2" seed="3" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="70"/><feGaussianBlur stdDeviation="16"/>';
-  rig.defs.appendChild(fEncre);
-  var encres = [['#3a4fd0', 330, 70], ['#f2f2f0', 445, 40], ['#e3142f', 560, 80]].map(function (d) {
-    var c = document.createElementNS(NS, 'circle');
-    c.setAttribute('cx', d[1]); c.setAttribute('cy', d[2]); c.setAttribute('r', 150); c.setAttribute('fill', d[0]); c.setAttribute('filter', 'url(#b-encre)');
-    rig.derriere.appendChild(c); return c;
-  });
-  gsap.set(encres, { scale: 0, opacity: 0, transformOrigin: '50% 50%' });
-
+  var video = document.getElementById('video-intro');
+  var COUPE = 2.55;                                      // s : panthère couchée, avant le fondu vers le fond blanc
+  var VID = { w: 864, h: 496, panthere: [127, 76, 730, 443] };  // panthère couchée dans la vidéo (px)
   var cadreFinal = '-80 -60 860 1060';
   var texte = document.getElementById('ouverture-texte');
-  var tl = null;
-  var optsIntro = {
-    cadreFinal: cadreFinal,
-    surLogo: function (tl, t) {
-      tl.to('#projecteur', { opacity: 0.55, duration: 1.2 }, t);
-      tl.fromTo(texte, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 1.2, ease: 'expo.out' }, t + 0.3);
-    }
-  };
+  var L = rig.lettres, hautes = [L.R, L.A, L.i, L.D];
+  var tl = null, attente = null;
+
+  // Cadre de départ : la panthère du logo (0..674 × 0..261 unités) posée sur la panthère de la vidéo.
+  function cadreDepart() {
+    var r = video.getBoundingClientRect(), s = Math.min(r.width / VID.w, r.height / VID.h);
+    var ox = (r.width - VID.w * s) / 2, oy = (r.height - VID.h * s) / 2, P = VID.panthere;
+    var sx = ox + P[0] * s, larg = (P[2] - P[0]) * s, bas = oy + P[3] * s;
+    var k = larg / 674, svg = rig.svg.getBoundingClientRect();
+    var vx = -(sx - (svg.left - r.left)) / k, vy = 261 - (bas - (svg.top - r.top)) / k;
+    return [vx, vy, svg.width / k, svg.height / k].map(function (v) { return Math.round(v * 10) / 10; }).join(' ');
+  }
+  function etatInitial() {
+    gsap.set(rig.svg, { attr: { viewBox: cadreFinal }, x: 0, y: 0 });
+    gsap.set([rig.dessin, rig.yeux, rig.gueule, rig.ondes, rig.logoFinal, rig.panthere, '#projecteur', texte], { opacity: 0 });
+    gsap.set([rig.corps, rig.bras, rig.pied, rig.tete], { opacity: 1, x: 0, y: 0, rotation: 0 });
+    gsap.set(rig.patte, { opacity: 0, x: 0, y: 0, rotation: 0 });   // la patte qui pend sur RAID arrive avec les lettres
+    gsap.set(hautes, { y: 300, opacity: 0 });
+    gsap.set(L.croix, { rotation: -200, scale: 0.3, opacity: 0, svgOrigin: '57 420' });
+    gsap.set(rig.barres.bleu, { scaleX: 0, svgOrigin: '250 651' });
+    gsap.set(rig.barres.rouge, { scaleX: 0, svgOrigin: '455 651' });
+    gsap.set(video, { opacity: 1 });
+  }
   function construire() {
-    tl = Panthere.intro(rig, optsIntro);
-    tl.fromTo('#projecteur', { opacity: 0 }, { opacity: 1, duration: 0.25, ease: 'steps(3)' }, 0.1);
+    etatInitial();
+    tl = gsap.timeline({ paused: true });
+    // 1. La vidéo joue ; la frise attend qu'elle arrive à la coupe.
+    tl.call(function () {
+      if (tl.progress() > 0.5) return;
+      tl.pause();
+      try { video.currentTime = 0; } catch (e) {}
+      var p = video.play(); if (p && p.catch) p.catch(function () { reprendre(); });
+      cancelAnimationFrame(attente);
+      (function guetter() {
+        if (video.currentTime >= COUPE || video.ended) { reprendre(); return; }
+        attente = requestAnimationFrame(guetter);
+      })();
+    }, null, 0.01);
+    function reprendre() {
+      video.pause();
+      gsap.set(rig.svg, { attr: { viewBox: cadreDepart() } });
+      tl.play();
+    }
+    // 2. La panthère du logo apparaît à la place de celle de la vidéo.
+    var T = 0.05;
+    tl.to(video, { opacity: 0, duration: 0.9, ease: 'power2.inOut' }, T);
+    tl.to(rig.panthere, { opacity: 1, duration: 0.9, ease: 'power2.inOut' }, T);
+    // 3. La caméra recule, RAID surgit dessous, la croix tourne, les filets se tracent.
+    tl.to(rig.svg, { attr: { viewBox: cadreFinal }, duration: 1.4, ease: 'expo.inOut' }, T + 0.7);
+    tl.to('#projecteur', { opacity: 0.55, duration: 1.2 }, T + 0.9);
+    var Ls = T + 1.6;
+    tl.to(hautes, { y: 0, opacity: 1, duration: 0.6, ease: 'expo.out', stagger: 0.11 }, Ls);
+    tl.to(rig.patte, { opacity: 1, duration: 0.5, ease: 'power2.out' }, Ls + 0.35);
+    tl.to(L.croix, { rotation: 0, scale: 1, opacity: 1, duration: 1.0, ease: 'expo.out' }, Ls + 0.3);
+    tl.to([rig.barres.bleu, rig.barres.rouge], { scaleX: 1, duration: 0.8, ease: 'expo.inOut' }, Ls + 0.55);
+    // 4. Le logo officiel et le titre.
+    var F = Ls + 1.45;
+    tl.to(rig.logoFinal, { opacity: 1, duration: 0.9, ease: 'power2.inOut' }, F);
+    tl.to([rig.panthere, L.croix, hautes, rig.barres.bleu, rig.barres.rouge], { opacity: 0, duration: 0.9, ease: 'power2.inOut' }, F + 0.05);
+    tl.fromTo(texte, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 1.2, ease: 'expo.out', immediateRender: false }, F + 0.3);
+    tl.call(function () { cancelAnimationFrame(attente); video.pause(); gsap.set(video, { opacity: 0 }); }, null, F + 1.5);
     window.__tl = tl; return tl;
   }
 
   function ouvrirSite() { document.getElementById('barre').classList.add('visible'); lenis.start(); ScrollTrigger.refresh(); }
-  Panthere.porte({ passer: document.getElementById('passer'), construire: construire, attendre: Panthere.precharger(), apres: ouvrirSite });
+  var videoPrete = new Promise(function (ok) {
+    if (video.readyState >= 3) ok(); else { video.addEventListener('canplaythrough', ok, { once: true }); video.addEventListener('error', ok, { once: true }); setTimeout(ok, 5000); }
+  });
+  Panthere.porte({ passer: document.getElementById('passer'), construire: construire, attendre: videoPrete, apres: ouvrirSite });
   document.getElementById('revoir').addEventListener('click', function () {
     lenis.scrollTo(0, { immediate: true }); lenis.stop();
-    tl.eventCallback('onComplete', function () { lenis.start(); }); tl.play(0);
+    etatInitial(); tl.eventCallback('onComplete', function () { lenis.start(); }); tl.play(0);
   });
 
   if (reduit) return;

@@ -206,13 +206,14 @@ window.Panthere = (function () {
       img.setAttribute('href', nomImage(base, 'c', k));
       gsap.set(r.dessin, { x: 0 });
     }
-    tl.to(vue, { c: D.c.length - 1, duration: 1.7, ease: 'power1.inOut', onUpdate: couche }, R + 0.2);
+    tl.to(vue, { c: D.c.length - 1, duration: (D.c.length - 1) / D.fps, ease: 'none', onUpdate: couche }, R + 0.2);
 
     // 5. Le fondu : la panthère dessinée laisse place à la panthère du logo.
-    var F0 = R + 2.0;
+    var F0 = R + 0.2 + (D.c.length - 1) / D.fps + 0.25;
     tl.addLabel('fondu', F0);
-    tl.to(r.dessin, { opacity: 0, duration: 1.1, ease: 'power2.inOut' }, F0);
-    tl.to([r.corps, r.bras, r.pied, r.patte, r.tete], { opacity: 1, duration: 1.1, ease: 'power2.inOut' }, F0);
+    // La panthère du logo apparaît d'abord par-dessus, puis la panthère dessinée s'efface : pas d'étape grise.
+    tl.to([r.corps, r.bras, r.pied, r.patte, r.tete], { opacity: 1, duration: 0.9, ease: 'power2.inOut' }, F0);
+    tl.to(r.dessin, { opacity: 0, duration: 0.7, ease: 'power2.inOut' }, F0 + 0.6);
 
     // 6. RAID surgit sous elle, la croix tourne, les filets se tracent.
     var Ls = F0 + 0.7;

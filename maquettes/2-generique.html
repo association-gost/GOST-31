@@ -72,6 +72,8 @@ a { color: inherit; text-underline-offset: .25em; }
 .projecteur { position: absolute; inset: 0; background: radial-gradient(ellipse 46% 34% at 50% 52%, rgba(255,255,255,.13), rgba(255,255,255,.03) 55%, transparent 75%); opacity: 0; }
 .panthere-svg { position: relative; width: 100%; height: 100%; display: block; overflow: visible; }
 .video-intro { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
+.video-intro { -webkit-mask-image: radial-gradient(ellipse 50% 50% at 50% 48%, #000 62%, transparent 100%); mask-image: radial-gradient(ellipse 50% 50% at 50% 48%, #000 62%, transparent 100%); }
+@media (max-width: 820px), (orientation: portrait) { .video-intro { -webkit-mask-image: linear-gradient(180deg, transparent calc(50% - 31vw), #000 calc(50% - 22vw), #000 calc(50% + 20vw), transparent calc(50% + 29vw)); mask-image: linear-gradient(180deg, transparent calc(50% - 31vw), #000 calc(50% - 22vw), #000 calc(50% + 20vw), transparent calc(50% + 29vw)); } }
 .ouverture-texte { position: absolute; left: 0; right: 0; bottom: max(40px, 6vh); display: grid; justify-items: center; gap: 14px; padding: 0 var(--gouttiere); text-align: center; opacity: 0; }
 .ouverture-texte .presente { font: 400 .72rem/1 var(--titre); letter-spacing: .5em; text-transform: uppercase; color: var(--gris); }
 .ouverture-texte h1 { font-size: clamp(1.25rem, 3vw, 2.4rem); letter-spacing: .22em; }
@@ -332,7 +334,21 @@ a { color: inherit; text-underline-offset: .25em; }
     var vx = -(sx - (svg.left - r.left)) / k, vy = 261 - (bas - (svg.top - r.top)) / k;
     return [vx, vy, svg.width / k, svg.height / k].map(function (v) { return Math.round(v * 10) / 10; }).join(' ');
   }
+  // Filtre « dessin au trait » : la panthère du logo en simple tracé blanc (contour + traits intérieurs),
+  // dont le remplissage blanc monte ensuite progressivement.
+  var NS = 'http://www.w3.org/2000/svg', fTrait = document.createElementNS(NS, 'filter');
+  fTrait.setAttribute('id', 'b-trait'); ['x', 'y'].forEach(function (a) { fTrait.setAttribute(a, '-5%'); });
+  fTrait.setAttribute('width', '110%'); fTrait.setAttribute('height', '110%');
+  fTrait.innerHTML = '<feMorphology in="SourceAlpha" operator="dilate" radius="2.6" result="dil"/>' +
+    '<feComposite in="dil" in2="SourceAlpha" operator="out" result="bord"/>' +
+    '<feFlood flood-color="#f2f2f0"/><feComposite in2="bord" operator="in" result="trait"/>' +
+    '<feComponentTransfer in="SourceGraphic" result="plein"><feFuncA type="linear" slope="0"/></feComponentTransfer>' +
+    '<feMerge><feMergeNode in="plein"/><feMergeNode in="trait"/></feMerge>';
+  rig.defs.appendChild(fTrait);
+  var traitRayon = fTrait.querySelector('feMorphology'), traitPlein = fTrait.querySelector('feFuncA');
   function etatInitial() {
+    rig.pose.setAttribute('filter', 'url(#b-trait)');
+    traitRayon.setAttribute('radius', '2.6'); traitPlein.setAttribute('slope', '0');
     gsap.set(rig.svg, { attr: { viewBox: cadreFinal }, x: 0, y: 0 });
     gsap.set([rig.dessin, rig.yeux, rig.gueule, rig.ondes, rig.logoFinal, rig.panthere, '#projecteur', texte], { opacity: 0 });
     gsap.set([rig.corps, rig.bras, rig.pied, rig.tete], { opacity: 1, x: 0, y: 0, rotation: 0 });
@@ -341,7 +357,7 @@ a { color: inherit; text-underline-offset: .25em; }
     gsap.set(L.croix, { rotation: -200, scale: 0.3, opacity: 0, svgOrigin: '57 420' });
     gsap.set(rig.barres.bleu, { scaleX: 0, svgOrigin: '250 651' });
     gsap.set(rig.barres.rouge, { scaleX: 0, svgOrigin: '455 651' });
-    gsap.set(video, { opacity: 1 });
+    gsap.set(video, { opacity: 1, filter: 'blur(0px)' });
   }
   function construire() {
     etatInitial();
@@ -364,9 +380,14 @@ a { color: inherit; text-underline-offset: .25em; }
       tl.play();
     }
     // 2. La panthère du logo apparaît à la place de celle de la vidéo.
+    // La vidéo se dissout en se floutant ; le logo apparaît d'abord en tracé blanc, puis se remplit.
     var T = 0.05;
-    tl.to(video, { opacity: 0, duration: 0.9, ease: 'power2.inOut' }, T);
-    tl.to(rig.panthere, { opacity: 1, duration: 0.9, ease: 'power2.inOut' }, T);
+    tl.to(video, { opacity: 0, filter: 'blur(10px)', duration: 1.15, ease: 'sine.inOut' }, T);
+    tl.to(rig.panthere, { opacity: 1, duration: 1.0, ease: 'sine.inOut' }, T + 0.6);
+    tl.to(traitPlein, { attr: { slope: 1 }, duration: 1.1, ease: 'power2.inOut' }, T + 1.5);
+    tl.to(traitRayon, { attr: { radius: 0 }, duration: 0.9, ease: 'power2.in' }, T + 1.7);
+    tl.call(function () { rig.pose.removeAttribute('filter'); }, null, T + 2.65);
+    T += 1.55;   // la suite (recul, lettres) démarre une fois le logo rempli
     // 3. La caméra recule, RAID surgit dessous, la croix tourne, les filets se tracent.
     tl.to(rig.svg, { attr: { viewBox: cadreFinal }, duration: 1.4, ease: 'expo.inOut' }, T + 0.7);
     tl.to('#projecteur', { opacity: 0.55, duration: 1.2 }, T + 0.9);

@@ -1,6 +1,6 @@
-// Intro de Générique : une panthère dessinée dans le style du logo (images rendues : silhouette claire,
-// traits de séparation) marche depuis la gauche ; à l'arrêt elle tourne la tête vers nous,
-// elle se couche, puis fondu vers la panthère du logo et le logo complet. Pas de son, pas de rugissement.
+// Intro de Générique : le dessin de la panthère (style du logo), animé en papier découpé dans Blender
+// (maillage déformé par un squelette 2D, pieds plantés), marche depuis la gauche et s'arrête : la dernière
+// image est exactement le dessin. Puis fondu vers la panthère du logo et le logo complet. Pas de son.
 // La « caméra » est le viewBox du SVG.
 window.Panthere = (function () {
   var NS = 'http://www.w3.org/2000/svg';
@@ -133,10 +133,10 @@ window.Panthere = (function () {
 
   // Précharge et décode toutes les images de la panthère dessinée.
   function precharger(base) {
-    var D = window.PANTHERE_DESSIN; base = base || 'assets/panthere-dessin/';
+    var D = window.PANTHERE_DESSIN; base = base || 'assets/panthere-2d/';
     if (!D) return Promise.resolve();
     var liste = [];
-    ['m', 't', 'c'].forEach(function (nom) { D[nom].forEach(function (e, k) { liste.push(nomImage(base, nom, k)); }); });
+    ['m', 't', 'c'].forEach(function (nom) { (D[nom] || []).forEach(function (e, k) { liste.push(nomImage(base, nom, k)); }); });
     window.__imagesPanthere = liste.map(function (u) { var i = new Image(); i.src = u; return i; });
     return Promise.all(window.__imagesPanthere.map(function (i) { return i.decode ? i.decode().catch(function () {}) : Promise.resolve(); }));
   }
@@ -144,21 +144,19 @@ window.Panthere = (function () {
   // La séquence. Crochets : surRugit(tl, t), surLettres(tl, t), surLogo(tl, t).
   function intro(r, o) {
     o = o || {};
-    var D = window.PANTHERE_DESSIN, base = o.dessin || 'assets/panthere-dessin/';
+    var D = window.PANTHERE_DESSIN, base = o.dessin || 'assets/panthere-2d/';
     var cadreFinal = o.cadreFinal || CADRES.final;
     var L = r.lettres, tl = gsap.timeline({ paused: true });
     var hautes = [L.R, L.A, L.i, L.D];
 
-    // Échelle et position des images : sur la dernière image (couchée), le cou tombe sur celui du logo
-    // et le sol sur le rebord ; toutes les images partagent ce repère.
-    var COU = [445, 112], dern = D.c[D.c.length - 1];
-    var s = (262 - COU[1]) / (D.sol - dern[2]);
-    var A = [COU[0] - dern[1] * s, COU[1] - dern[2] * s];
+    // Échelle et position des images : à l'arrêt, la panthère dessinée a les pattes sur le rebord du logo
+    // et la tête au-dessus de celle du logo.
+    var s = 0.78;
+    var A = [452 - D.tete[0] * s, 262 - D.sol * s];
     var Wd = D.recadrage.largeur * s, Hd = D.recadrage.hauteur * s, img = r.dessinImg;
     img.setAttribute('x', arrondi(A[0])); img.setAttribute('y', arrondi(A[1]));
     img.setAttribute('width', arrondi(Wd)); img.setAttribute('height', arrondi(Hd));
-    var haut = A[1];
-    var cadreMarche = arrondi(A[0] - 80) + ' ' + arrondi(haut - 70) + ' ' + arrondi(Wd + 160) + ' ' + arrondi(262 - haut + 130);
+    var cadreMarche = arrondi(A[0] - 70) + ' ' + arrondi(A[1] - 50) + ' ' + arrondi(Wd + 140) + ' ' + arrondi(262 - A[1] + 110);
 
     gsap.set(r.svg, { attr: { viewBox: cadreMarche }, x: 0, y: 0 });
     r.flou.setAttribute('stdDeviation', '0 0');
@@ -175,50 +173,32 @@ window.Panthere = (function () {
     gsap.set(r.gueule, { scaleY: 0, svgOrigin: '421 102' });
     gsap.set([r.yeux, r.logoFinal, r.ondes], { opacity: 0 });
 
-    // 1. La marche, depuis la gauche.
-    var vue = { m: 0, c: 0, decal: -320 };
+    // 1. La marche, depuis la gauche : chaque image porte l'avance du corps, les pieds restent plantés.
+    var total = D.m[D.m.length - 1];
+    var vue = { m: 0, decal: -380 };
     function marche() {
-      var k = Math.min(D.m.length - 1, Math.round(vue.m)), e = D.m[k];
+      var k = Math.min(D.m.length - 1, Math.round(vue.m));
       img.setAttribute('href', nomImage(base, 'm', k));
-      gsap.set(r.dessin, { x: -e[0] * D.pxParUnite * s + vue.decal });
+      gsap.set(r.dessin, { x: -(total - D.m[k]) * D.pxParUnite * s + vue.decal });
     }
     marche();
     var dureeMarche = (D.m.length - 1) / D.fps;
     tl.addLabel('arrivee', 0);
     tl.to(vue, { m: D.m.length - 1, duration: dureeMarche, ease: 'none', onUpdate: marche }, 0);
-    tl.to(vue, { decal: 0, duration: 1.7, ease: 'power2.out', onUpdate: marche }, 0);
+    tl.to(vue, { decal: 0, duration: 1.8, ease: 'power2.out', onUpdate: marche }, 0);
 
-    // 2. Elle s'arrête et tourne la tête vers nous (sa propre tête, dessinée comme le corps).
-    var Ta = dureeMarche;
-    tl.addLabel('tete', Ta);
-    function tourne() {
-      var k = Math.min(D.t.length - 1, Math.round(vue.t)), e = D.t[k];
-      img.setAttribute('href', nomImage(base, 't', k));
-      gsap.set(r.dessin, { x: -e[0] * D.pxParUnite * s });
-    }
-    vue.t = 0;
-    tl.to(vue, { t: D.t.length - 1, duration: (D.t.length - 1) / D.fps, ease: 'none', onUpdate: tourne }, Ta);
-    Ta += (D.t.length - 1) / D.fps;
+    // 2. Elle s'arrête : c'est exactement le dessin. Un temps, puis la caméra s'élargit sur le cadre du logo.
+    var R = dureeMarche + 0.6;
+    tl.addLabel('arret', dureeMarche);
+    tl.to(r.svg, { attr: { viewBox: cadreFinal }, duration: 1.6, ease: 'power2.inOut' }, R);
 
-    // 3. Elle se couche ; la caméra s'élargit doucement sur le cadre du logo.
-    var R = Ta + 0.6;
-    tl.addLabel('couche', R);
-    tl.to(r.svg, { attr: { viewBox: cadreFinal }, duration: 2.0, ease: 'power2.inOut' }, R);
-    function couche() {
-      var k = Math.min(D.c.length - 1, Math.round(vue.c));
-      img.setAttribute('href', nomImage(base, 'c', k));
-      gsap.set(r.dessin, { x: 0 });
-    }
-    tl.to(vue, { c: D.c.length - 1, duration: (D.c.length - 1) / D.fps, ease: 'none', onUpdate: couche }, R + 0.2);
-
-    // 5. Le fondu : la panthère dessinée laisse place à la panthère du logo.
-    var F0 = R + 0.2 + (D.c.length - 1) / D.fps + 0.25;
+    // 3. Le fondu : la panthère du logo apparaît par-dessus, puis la panthère dessinée s'efface.
+    var F0 = R + 0.5;
     tl.addLabel('fondu', F0);
-    // La panthère du logo apparaît d'abord par-dessus, puis la panthère dessinée s'efface : pas d'étape grise.
-    tl.to([r.corps, r.bras, r.pied, r.patte, r.tete], { opacity: 1, duration: 0.9, ease: 'power2.inOut' }, F0);
-    tl.to(r.dessin, { opacity: 0, duration: 0.7, ease: 'power2.inOut' }, F0 + 0.6);
+    tl.to([r.corps, r.bras, r.pied, r.patte, r.tete], { opacity: 1, duration: 1.0, ease: 'power2.inOut' }, F0);
+    tl.to(r.dessin, { opacity: 0, duration: 0.9, ease: 'power2.inOut' }, F0 + 0.3);
 
-    // 6. RAID surgit sous elle, la croix tourne, les filets se tracent.
+    // 4. RAID surgit sous elle, la croix tourne, les filets se tracent.
     var Ls = F0 + 0.7;
     tl.addLabel('lettres', Ls);
     tl.to(hautes, { y: 0, opacity: 1, duration: 0.6, ease: 'expo.out', stagger: 0.11 }, Ls);
@@ -226,7 +206,7 @@ window.Panthere = (function () {
     tl.to([r.barres.bleu, r.barres.rouge], { scaleX: 1, duration: 0.8, ease: 'expo.inOut' }, Ls + 0.55);
     if (o.surLettres) o.surLettres(tl, Ls);
 
-    // 7. Fondu vers le logo officiel.
+    // 5. Fondu vers le logo officiel.
     var F = Ls + 1.45;
     tl.addLabel('logo', F);
     tl.to(r.logoFinal, { opacity: 1, duration: 0.9, ease: 'power2.inOut' }, F);

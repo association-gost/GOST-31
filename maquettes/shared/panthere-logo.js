@@ -126,7 +126,10 @@ window.Panthere = (function () {
   }
 
   function arrondi(n) { return Math.round(n * 10) / 10; }
-  function nomImage(base, nom, k) { return base + nom + String(k).padStart(3, '0') + '.webp'; }
+  function nomImage(base, nom, k) {
+    var v = window.PANTHERE_DESSIN && window.PANTHERE_DESSIN.version;
+    return base + nom + String(k).padStart(3, '0') + '.webp' + (v ? '?v=' + v : '');
+  }
 
   // Précharge et décode toutes les images de la panthère dessinée.
   function precharger(base) {

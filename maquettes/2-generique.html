@@ -142,13 +142,13 @@ a { color: inherit; text-underline-offset: .25em; }
 .sans-mouvement .pellicule, .sans-mouvement .compteur { display: none; }
 
 /* Raccourcis du téléphone : une bande de pellicule sous la barre, une vignette par rayon. */
-.raccourcis { display: none; }
+.barre .raccourcis { display: none; }
 @media (max-width: 820px), (orientation: portrait) {
   .barre { flex-wrap: wrap; row-gap: 10px; padding: 12px 0 10px; background: rgba(5,5,6,.96); border-bottom: 1px solid #1d1d22; }
   .barre-logo { padding-left: var(--gouttiere); }
   .barre nav:not(.raccourcis) { display: none; }
   .barre-commander { margin-left: auto; margin-right: var(--gouttiere); padding: 11px 14px; }
-  .raccourcis {
+  .barre .raccourcis {
     display: flex; gap: 8px; flex: 1 0 100%; overflow-x: auto; scroll-snap-type: x proximity;
     padding: 2px var(--gouttiere) 2px; scrollbar-width: none; overscroll-behavior-x: contain;
     -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 var(--gouttiere), #000 calc(100% - 28px), transparent 100%);

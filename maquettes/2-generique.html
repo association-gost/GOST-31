@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>GOST 31 · Générique</title>
-<meta name="description" content="Les goodies de GOST 31 : t-shirts, casquettes, pulls, doudoune, serviette, pétanque et la cave. Commande par e-mail.">
+<meta name="description" content="Les goodies de GOST 31 : t-shirts, casquettes, pulls, doudoune, serviette et pétanque. Commande par e-mail.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Hanken+Grotesk:wght@400;500;600&display=swap">
@@ -224,6 +224,7 @@ a { color: inherit; text-underline-offset: .25em; }
         <li><strong>Nous vous répondons</strong> pour confirmer le total et organiser la remise.</li>
       </ol>
       <p class="note">Pas de paiement en ligne : le règlement se fait à la remise de votre commande.</p>
+      <p class="note">D’autres articles sont disponibles auprès de l’antenne : contactez-nous pour plus d’informations.</p>
       <code class="adresse" id="adresse"></code>
       <div class="boutons-mail">
         <button class="bouton-blanc" type="button" id="copier" aria-controls="adresse">Copier l’adresse</button>
@@ -265,12 +266,12 @@ a { color: inherit; text-underline-offset: .25em; }
     }).join('') + '</ol>' : '';
     return '<section class="plan" id="plan-' + c.id + '" data-n="' + n + '" aria-labelledby="t-' + c.id + '"><div class="cadre">' +
       '<div class="ecran">' + prises + '</div>' +
-      '<div class="titre-plan"><h2 id="t-' + c.id + '">' + c.titre + '</h2><p>' + (n > 1 ? n + ' modèles' : '1 modèle') + '</p></div>' +
+      '<div class="titre-plan"><h2 id="t-' + c.id + '">' + c.titre + '</h2>' + (n ? '<p>' + (n > 1 ? n + ' modèles' : '1 modèle') + '</p>' : '') + '</div>' +
       '<div class="credits">' + credits + '</div>' + pell + (n > 1 ? '<p class="compteur" aria-hidden="true"></p>' : '') + '</div></section>';
   }).join('');
   document.getElementById('nav').innerHTML = CATALOGUE.map(function (c) { return '<a href="#plan-' + c.id + '">' + c.court + '</a>'; }).join('') + '<a href="#catalogue">Catalogue</a>';
   document.getElementById('raccourcis').innerHTML = CATALOGUE.map(function (c) {
-    return '<a href="#plan-' + c.id + '"><span class="vignette"><img src="assets/produits/' + c.produits[0].img + '" alt="" loading="lazy"></span><span>' + c.court + '</span></a>';
+    return '<a href="#plan-' + c.id + '"><span class="vignette">' + (c.produits[0] ? '<img src="assets/produits/' + c.produits[0].img + '" alt="" loading="lazy">' : '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="2.5" y="2.5" width="11" height="11"/></svg>') + '</span><span>' + c.court + '</span></a>';
   }).join('') + '<a href="#catalogue"><span class="vignette"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M2 4h12M2 8h12M2 12h8"/></svg></span><span>Tous les prix</span></a>';
   var bande = document.getElementById('raccourcis');
   function rayonActif(id, actif) {
@@ -283,7 +284,7 @@ a { color: inherit; text-underline-offset: .25em; }
   }
 
   // Générique de fin
-  document.getElementById('liste-credits').innerHTML = CATALOGUE.map(function (c) {
+  document.getElementById('liste-credits').innerHTML = CATALOGUE.filter(function (c) { return c.produits.length; }).map(function (c) {
     return '<div class="bloc-credits"><h3>' + c.titre + '</h3>' + c.produits.map(function (p) {
       return '<div class="ligne"><span class="nom">' + p.nom + '</span><span class="montant">' + Outils.prix(p.prix) + '<small>' + p.unite + '</small></span></div>';
     }).join('') + (c.alcool ? '<p class="mention">' + MENTION_ALCOOL + '</p>' : '') + '</div>';
@@ -435,7 +436,7 @@ a { color: inherit; text-underline-offset: .25em; }
       t += parProduit;
     });
     tlp.to({}, { duration: 0.15 });
-    plan._st = tlp.scrollTrigger; plan._frac = (0.45 + 0.4 * parProduit) / (0.6 + n * parProduit);
+    plan._st = tlp.scrollTrigger; plan._frac = n ? (0.45 + 0.4 * parProduit) / (0.6 + n * parProduit) : 0.6;
     boutons.forEach(function (b) {
       b.addEventListener('click', function () {
         var st = tlp.scrollTrigger, i = +b.dataset.i;

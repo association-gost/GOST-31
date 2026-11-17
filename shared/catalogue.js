@@ -45,13 +45,8 @@ window.CATALOGUE = [
     ]
   },
   {
-    id: 'cave', titre: 'Vins, champagne et rhum', court: 'La cave', alcool: true,
-    produits: [
-      { id: 'rhum', nom: 'Rhum cuvée 40 ans', desc: 'Rhum XO 42 % vol., 70 cl, coffret bleu blanc rouge.', prix: 60, unite: 'bouteille', img: 'rhum.jpg', w: 800, h: 1200 },
-      { id: 'champagne', nom: 'Champagne rosé', desc: 'Rosé Éclat, livré dans un coffret noir et or.', prix: 30, unite: 'bouteille', img: 'champagne.jpg', w: 800, h: 1200 },
-      { id: 'vin-rouge', nom: 'Vin rouge', desc: 'Étiquette noire et or « Servir sans faillir », verre gravé assorti.', prix: 15, unite: 'bouteille', img: 'vin-rouge.jpg', w: 800, h: 1200 },
-      { id: 'vin-rose', nom: 'Vin rosé', desc: 'Côtes de Provence, étiquette ronde noir et blanc.', prix: 10, unite: 'bouteille', img: 'vin-rose.jpg', w: 800, h: 1200 }
-    ]
+    id: 'cave', titre: 'La cave', court: 'La cave',
+    produits: []
   }
 ];
 

@@ -11,20 +11,20 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Hanken+Grotesk:wght@400;500;600&display=swap">
 <style>
 :root {
-  --noir: #050506;
-  --ecran: #0c0c0f;
-  --blanc: #f2f2f0;
-  --gris: #a2a2a8;
-  --gris-fonce: #2a2a30;
+  --noir: #ffffff;          /* fond */
+  --ecran: #f1f1f3;
+  --blanc: #111114;         /* texte */
+  --gris: #5c5c64;
+  --gris-fonce: #d6d6db;
   --bleu: #3a4fd0;
   --rouge: #e3142f;
   --titre: "Syncopate", "Arial", sans-serif;
   --texte: "Hanken Grotesk", system-ui, sans-serif;
   --gouttiere: clamp(16px, 4vw, 56px);
-  color-scheme: dark;
+  color-scheme: light;
 }
 * { box-sizing: border-box; }
-html { background: var(--noir); scrollbar-color: #3a3a40 var(--noir); }
+html { background: var(--noir); scrollbar-color: #c4c4ca var(--noir); }
 html.lenis, html.lenis body { height: auto; }
 .lenis.lenis-smooth { scroll-behavior: auto !important; }
 .lenis.lenis-stopped { overflow: hidden; }
@@ -45,19 +45,19 @@ a { color: inherit; text-underline-offset: .25em; }
 .bouton-entrer {
   display: inline-flex; align-items: center; gap: 14px; min-height: 54px;
   font: 700 .9rem/1 var(--titre); letter-spacing: .32em; text-transform: uppercase;
-  color: var(--blanc); background: transparent; border: 1px solid rgba(242,242,240,.6); padding: 18px 28px 18px 26px; cursor: pointer;
+  color: var(--blanc); background: transparent; border: 1px solid rgba(17,17,20,.5); padding: 18px 28px 18px 26px; cursor: pointer;
   transition: background .3s, color .3s, border-color .3s;
 }
 .bouton-entrer:hover { background: var(--blanc); color: var(--noir); border-color: var(--blanc); }
 .bouton-entrer svg { width: 22px; height: 22px; }
 .lien-muet { font: 500 .9rem/1 var(--texte); color: var(--gris); background: none; border: 0; text-decoration: underline; cursor: pointer; padding: 10px; }
 .lien-muet:hover { color: var(--blanc); }
-.bouton-passer { position: fixed; right: var(--gouttiere); bottom: 22px; z-index: 40; font: 400 .7rem/1 var(--titre); letter-spacing: .3em; text-transform: uppercase; color: var(--gris); background: none; border: 1px solid #3a3a40; padding: 12px 16px; cursor: pointer; }
+.bouton-passer { position: fixed; right: var(--gouttiere); bottom: 22px; z-index: 40; font: 400 .7rem/1 var(--titre); letter-spacing: .3em; text-transform: uppercase; color: var(--gris); background: none; border: 1px solid #c4c4ca; padding: 12px 16px; cursor: pointer; }
 .bouton-passer:hover { color: var(--blanc); border-color: var(--gris); }
-.eclair { position: fixed; inset: 0; z-index: 20; background: var(--rouge); opacity: 0; pointer-events: none; mix-blend-mode: screen; }
+.eclair { position: fixed; inset: 0; z-index: 20; background: var(--rouge); opacity: 0; pointer-events: none; mix-blend-mode: multiply; }
 
 /* Barre */
-.barre { position: fixed; top: 0; left: 0; right: 0; z-index: 30; display: flex; align-items: center; gap: 26px; padding: 16px var(--gouttiere); background: linear-gradient(180deg, rgba(5,5,6,.92), rgba(5,5,6,0)); transform: translateY(-110%); transition: transform .7s cubic-bezier(.2,.7,.2,1); }
+.barre { position: fixed; top: 0; left: 0; right: 0; z-index: 30; display: flex; align-items: center; gap: 26px; padding: 16px var(--gouttiere); background: linear-gradient(180deg, rgba(255,255,255,.94), rgba(255,255,255,0)); transform: translateY(-110%); transition: transform .7s cubic-bezier(.2,.7,.2,1); }
 .barre.visible { transform: none; }
 .barre-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; font: 700 .85rem/1 var(--titre); letter-spacing: .3em; }
 .barre-logo img { width: 38px; height: auto; }
@@ -70,7 +70,7 @@ a { color: inherit; text-underline-offset: .25em; }
 /* Ouverture */
 .ouverture { position: relative; height: 100vh; height: 100svh; overflow: hidden; }
 .scene { position: absolute; inset: 0; }
-.projecteur { position: absolute; inset: 0; background: radial-gradient(ellipse 46% 34% at 50% 52%, rgba(255,255,255,.13), rgba(255,255,255,.03) 55%, transparent 75%); opacity: 0; }
+.projecteur { position: absolute; inset: 0; background: radial-gradient(ellipse 46% 34% at 50% 52%, rgba(20,20,30,.05), rgba(20,20,30,.015) 55%, transparent 75%); opacity: 0; }
 .panthere-svg { position: relative; width: 100%; height: 100%; display: block; overflow: visible; }
 .video-intro { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
 .video-intro { -webkit-mask-image: radial-gradient(ellipse 50% 50% at 50% 48%, #000 62%, transparent 100%); mask-image: radial-gradient(ellipse 50% 50% at 50% 48%, #000 62%, transparent 100%); }
@@ -95,12 +95,12 @@ a { color: inherit; text-underline-offset: .25em; }
 .credit { position: absolute; left: 0; bottom: 0; width: 100%; opacity: 0; }
 .credit .role { font: 400 .66rem/1 var(--titre); letter-spacing: .4em; text-transform: uppercase; color: var(--gris); }
 .credit h3 { margin-top: 14px; font-size: clamp(1.3rem, 2.6vw, 2.3rem); letter-spacing: .12em; }
-.credit p.desc { margin-top: 14px; color: #cfcfd2; max-width: 44ch; }
+.credit p.desc { margin-top: 14px; color: #3a3a42; max-width: 44ch; }
 .credit .prix { margin-top: 18px; font: 700 1.6rem/1 var(--titre); letter-spacing: .08em; font-variant-numeric: tabular-nums; }
 .credit .prix small { font: 500 .9rem/1 var(--texte); letter-spacing: 0; color: var(--gris); margin-left: 6px; }
 .credit .mention { margin-top: 14px; font-size: .82rem; color: var(--gris); max-width: 46ch; }
 .pellicule { position: absolute; right: var(--gouttiere); bottom: 3.2vh; display: flex; gap: 8px; list-style: none; margin: 0; padding: 0; }
-.pellicule button { display: block; width: 58px; height: 40px; padding: 0; border: 1px solid #3a3a40; background: #000; cursor: pointer; opacity: .55; transition: opacity .3s, border-color .3s; }
+.pellicule button { display: block; width: 58px; height: 40px; padding: 0; border: 1px solid #c4c4ca; background: #fff; cursor: pointer; opacity: .55; transition: opacity .3s, border-color .3s; }
 .pellicule button img { width: 100%; height: 100%; object-fit: cover; }
 .pellicule button[aria-current="true"] { opacity: 1; border-color: var(--blanc); }
 .pellicule button:hover { opacity: 1; }
@@ -113,7 +113,7 @@ a { color: inherit; text-underline-offset: .25em; }
 .affiches-grille { margin: 7vh auto 0; max-width: 1180px; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 22px; }
 .affiche { display: block; text-decoration: none; background: var(--ecran); border: 1px solid var(--gris-fonce); transition: border-color .3s, transform .3s; }
 .affiche:hover { border-color: var(--rouge); transform: translateY(-4px); }
-.affiche-image { position: relative; aspect-ratio: 4 / 5; overflow: hidden; background: #000; }
+.affiche-image { position: relative; aspect-ratio: 4 / 5; overflow: hidden; background: var(--ecran); }
 .affiche-image img { width: 100%; height: 100%; object-fit: cover; }
 .affiche-badge { position: absolute; top: 14px; left: 14px; background: var(--rouge); color: #fff; font: 700 1.05rem/1 var(--titre); letter-spacing: .06em; padding: 12px 12px 11px; font-variant-numeric: tabular-nums; }
 .affiche-corps { padding: 18px 18px 22px; }
@@ -122,7 +122,7 @@ a { color: inherit; text-underline-offset: .25em; }
 .affiche-prix { margin: 12px 0 0; font: 700 1.3rem/1 var(--titre); letter-spacing: .06em; font-variant-numeric: tabular-nums; }
 .affiche-prix s, .prix-barre { color: var(--gris); font-weight: 400; font-size: .72em; margin-right: 4px; text-decoration-color: var(--rouge); text-decoration-thickness: 2px; }
 .affiche-fin { margin: 10px 0 0; font-size: .88rem; color: var(--gris); }
-.en-promo { color: #ff4d63; }
+.en-promo { color: var(--rouge); }
 .credit .promo-fin { margin-top: 8px; font: 700 .62rem/1.4 var(--titre); letter-spacing: .24em; text-transform: uppercase; color: var(--rouge); }
 @media (prefers-reduced-motion: reduce) { .affiche, .affiche:hover { transition: none; transform: none; } }
 
@@ -134,14 +134,14 @@ a { color: inherit; text-underline-offset: .25em; }
 .bloc-credits h3 { font-size: .78rem; letter-spacing: .5em; color: var(--gris); font-weight: 400; margin-bottom: 26px; }
 .bloc-credits + .bloc-credits { margin-top: 10vh; }
 .ligne { display: grid; grid-template-columns: 1fr 1fr; gap: 0 36px; padding: 7px 0; }
-.ligne .nom { text-align: right; font: 400 .98rem/1.5 var(--texte); color: #d9d9dc; }
+.ligne .nom { text-align: right; font: 400 .98rem/1.5 var(--texte); color: #2a2a30; }
 .ligne .montant { text-align: left; font: 700 .95rem/1.6 var(--titre); letter-spacing: .1em; font-variant-numeric: tabular-nums; }
 .ligne .montant small { font: 400 .82rem/1 var(--texte); letter-spacing: 0; color: var(--gris); margin-left: 6px; }
 .fin .mention { margin-top: 18px; font-size: .82rem; color: var(--gris); }
 
 .commander { margin: 22vh auto 0; max-width: 820px; text-align: center; }
 .commander h2 { font-size: clamp(1.6rem, 4vw, 3.2rem); letter-spacing: .24em; }
-.etapes { list-style: none; padding: 0; margin: 40px auto 0; display: grid; gap: 14px; max-width: 46ch; color: #d9d9dc; }
+.etapes { list-style: none; padding: 0; margin: 40px auto 0; display: grid; gap: 14px; max-width: 46ch; color: #2a2a30; }
 .etapes strong { color: var(--blanc); font-weight: 600; }
 .note { margin-top: 22px; color: var(--gris); }
 .adresse { display: block; margin: 48px auto 0; font: 700 clamp(1rem, 2.6vw, 1.7rem)/1.3 var(--titre); letter-spacing: .08em; overflow-wrap: anywhere; user-select: all; }
@@ -149,12 +149,12 @@ a { color: inherit; text-underline-offset: .25em; }
 .bouton-blanc, .bouton-ligne { font: 700 .72rem/1 var(--titre); letter-spacing: .26em; text-transform: uppercase; text-decoration: none; padding: 17px 20px; min-height: 50px; display: inline-flex; align-items: center; cursor: pointer; }
 .bouton-blanc { background: var(--blanc); color: var(--noir); border: 1px solid var(--blanc); }
 .bouton-blanc:hover { background: var(--rouge); border-color: var(--rouge); color: #fff; }
-.bouton-blanc.est-copie { background: #bfe9c9; border-color: #bfe9c9; }
-.bouton-ligne { background: none; color: var(--blanc); border: 1px solid #55555c; }
+.bouton-blanc.est-copie { background: #1f7a3a; border-color: #1f7a3a; color: #fff; }
+.bouton-ligne { background: none; color: var(--blanc); border: 1px solid #9a9aa2; }
 .bouton-ligne:hover { border-color: var(--blanc); }
-.modele { margin: 38px auto 0; max-width: 40ch; text-align: left; white-space: pre-line; color: var(--gris); font-size: .95rem; padding-left: 18px; border-left: 1px solid #3a3a40; }
+.modele { margin: 38px auto 0; max-width: 40ch; text-align: left; white-space: pre-line; color: var(--gris); font-size: .95rem; padding-left: 18px; border-left: 1px solid #c4c4ca; }
 .mot-fin { margin-top: 24vh; text-transform: uppercase; font: 700 clamp(2.2rem, 7vw, 5rem)/1 var(--titre); letter-spacing: .5em; padding-left: .5em; }
-.pied { margin: 10vh auto 0; max-width: 1200px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; color: var(--gris); font-size: .88rem; border-top: 1px solid #1d1d22; padding-top: 22px; }
+.pied { margin: 10vh auto 0; max-width: 1200px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; color: var(--gris); font-size: .88rem; border-top: 1px solid #e2e2e6; padding-top: 22px; }
 .pied button { font: inherit; color: inherit; background: none; border: 0; text-decoration: underline; cursor: pointer; padding: 0; }
 
 .sans-mouvement .ecran { clip-path: none; }
@@ -168,7 +168,7 @@ a { color: inherit; text-underline-offset: .25em; }
 /* Raccourcis du téléphone : une bande de pellicule sous la barre, une vignette par rayon. */
 .barre .raccourcis { display: none; }
 @media (max-width: 820px), (orientation: portrait) {
-  .barre { flex-wrap: wrap; row-gap: 10px; padding: 12px 0 10px; background: rgba(5,5,6,.96); border-bottom: 1px solid #1d1d22; }
+  .barre { flex-wrap: wrap; row-gap: 10px; padding: 12px 0 10px; background: rgba(255,255,255,.96); border-bottom: 1px solid #e2e2e6; }
   .barre-logo { padding-left: var(--gouttiere); }
   .barre nav:not(.raccourcis) { display: none; }
   .barre-commander { margin-left: auto; margin-right: var(--gouttiere); padding: 11px 14px; }
@@ -182,19 +182,19 @@ a { color: inherit; text-underline-offset: .25em; }
   .raccourcis a {
     flex: 0 0 auto; scroll-snap-align: start; display: grid; grid-template-columns: 34px auto; align-items: center; gap: 8px;
     min-height: 44px; padding: 4px 12px 4px 4px; text-decoration: none; color: var(--gris);
-    border: 1px solid #2a2a30; background: #0c0c0f; transition: color .25s, border-color .25s, background .25s;
+    border: 1px solid #d6d6db; background: #f4f4f6; transition: color .25s, border-color .25s, background .25s;
   }
-  .raccourcis a .vignette { width: 34px; height: 34px; overflow: hidden; background: #000; display: grid; place-items: center; }
+  .raccourcis a .vignette { width: 34px; height: 34px; overflow: hidden; background: #e8e8ec; display: grid; place-items: center; }
   .raccourcis a .vignette img { width: 100%; height: 100%; object-fit: cover; opacity: .7; transition: opacity .25s; }
   .raccourcis a .vignette svg { width: 16px; height: 16px; }
   .raccourcis a span { font: 400 .6rem/1.2 var(--titre); letter-spacing: .18em; text-transform: uppercase; white-space: nowrap; }
-  .raccourcis a[aria-current="true"] { color: var(--blanc); border-color: var(--blanc); background: #16161a; }
+  .raccourcis a[aria-current="true"] { color: var(--blanc); border-color: var(--blanc); background: #e8e8ec; }
   .raccourcis a[aria-current="true"] .vignette img { opacity: 1; }
-  .raccourcis a:active { background: #1d1d22; }
+  .raccourcis a:active { background: #dcdce0; }
   .ecran { top: 136px; bottom: auto; height: min(40vh, calc(100svh - 136px - 300px)); }
   .prise img { left: 0; right: 0; width: 100%; object-position: center; -webkit-mask-image: linear-gradient(180deg, transparent, #000 14%, #000 86%, transparent); mask-image: linear-gradient(180deg, transparent, #000 14%, #000 86%, transparent); }
   .titre-plan { top: 148px; max-width: none; right: var(--gouttiere); }
-  .titre-plan h2 { font-size: 1.2rem; text-shadow: 0 1px 12px #000; }
+  .titre-plan h2 { font-size: 1.2rem; text-shadow: 0 1px 12px rgba(255,255,255,.95); }
   .titre-plan p { display: none; }
   .credits { left: var(--gouttiere); right: var(--gouttiere); width: auto; bottom: 92px; }
   .credit h3 { font-size: 1.15rem; margin-top: 10px; }
@@ -213,7 +213,7 @@ a { color: inherit; text-underline-offset: .25em; }
 <div class="eclair" id="eclair" aria-hidden="true"></div>
 
 <header class="barre" id="barre">
-  <a class="barre-logo" href="#haut" aria-label="GOST 31, retour en haut"><img src="assets/logo-clair.png" alt="" width="38" height="38">GOST 31</a>
+  <a class="barre-logo" href="#haut" aria-label="GOST 31, retour en haut"><img src="assets/logo.png" alt="" width="38" height="38">GOST 31</a>
   <nav aria-label="Catégories" id="nav"></nav>
   <a class="barre-commander" href="#commander">Commander</a>
   <nav class="raccourcis" aria-label="Rayons" id="raccourcis"></nav>
@@ -222,7 +222,7 @@ a { color: inherit; text-underline-offset: .25em; }
 <main id="haut">
   <section class="ouverture" aria-label="Accueil">
     <div class="scene" id="scene"><div class="projecteur" id="projecteur"></div></div>
-    <video class="video-intro" id="video-intro" src="assets/intro-panthere.mp4" muted playsinline preload="auto" aria-hidden="true"></video>
+    <video class="video-intro" id="video-intro" src="assets/intro-panthere-blanc.mp4" muted playsinline preload="auto" aria-hidden="true"></video>
     <div class="ouverture-texte" id="ouverture-texte">
       <p class="presente">L’antenne GOST 31 présente</p>
       <h1>Les goodies de GOST 31</h1>
@@ -381,9 +381,9 @@ a { color: inherit; text-underline-offset: .25em; }
   })();
 
   // L'intro : la vidéo de la panthère (marche, se couche), coupée juste avant son propre fondu vers le logo
-  // sur fond blanc ; la panthère du logo clair apparaît à sa place, la caméra recule et RAID se construit.
+  // sur fond blanc ; la panthère du logo noir apparaît à sa place, la caméra recule et RAID se construit.
   var rig = Panthere.creer(document.getElementById('scene'), {
-    src: 'assets/logo-clair-hd.png', final: 'assets/logo-clair-hd.png', prefixe: 'b'
+    src: 'assets/logo-hd.png', final: 'assets/logo-hd.png', prefixe: 'b'
   });
   var video = document.getElementById('video-intro');
   var COUPE = 2.55;                                      // s : panthère couchée, avant le fondu vers le fond blanc
@@ -435,7 +435,7 @@ a { color: inherit; text-underline-offset: .25em; }
       depart = { scale: 1 / k, x: gauche - S.left - (A.x - S.left) / k, y: bas - S.top - (A.y - S.top) / k };
       tl.play();
     }
-    // 2. D'une seule traite : la panthère rétrécit et monte jusqu'à sa place dans le logo, en blanchissant.
+    // 2. D'une seule traite : la panthère rétrécit et monte jusqu'à sa place dans le logo, en noircissant.
     var T = 0.05, D = 1.5;
     tl.to(video, { x: function () { return cible.x; }, y: function () { return cible.y; }, scale: function () { return cible.scale; },
       transformOrigin: '0 0', duration: D, ease: 'power2.inOut', immediateRender: false }, T);

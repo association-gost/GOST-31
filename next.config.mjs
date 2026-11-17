@@ -32,6 +32,9 @@ const communs = [
   { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
   { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(), payment=(), usb=()' },
   { key: 'Cross-Origin-Opener-Policy', value: 'same-origin' },
+  // Site non référencé : aucun moteur de recherche n'indexe ni pages ni images.
+  // (Pas de « Disallow » dans robots.txt : les robots doivent pouvoir lire ce noindex.)
+  { key: 'X-Robots-Tag', value: 'noindex, nofollow, noarchive, noimageindex' },
 ];
 
 /** @type {import('next').NextConfig} */

@@ -24,7 +24,9 @@ window.CATALOGUE = [
     id: 'pulls', titre: 'Pulls à capuche', court: 'Pulls',
     produits: [
       { id: 'pull-noir', nom: 'Pull à capuche noir', desc: 'Noir, grand écusson « Since 1985 » brodé ton sur ton sur la poitrine, poche kangourou.', prix: 50, unite: 'pièce', img: 'pull-noir.jpg', w: 900, h: 985 },
-      { id: 'pull-kaki', nom: 'Pull à capuche kaki', desc: 'Kaki, grand écusson « Since 1985 » brodé en noir sur la poitrine, poche kangourou.', prix: 50, unite: 'pièce', img: 'pull-kaki.jpg', w: 900, h: 985 }
+      { id: 'pull-kaki', nom: 'Pull à capuche kaki', desc: 'Kaki, grand écusson « Since 1985 » brodé en noir sur la poitrine, poche kangourou.', prix: 50, unite: 'pièce', img: 'pull-kaki.jpg', w: 900, h: 985 },
+      { id: 'pull-marine-orange', nom: 'Pull à capuche marine et orange', desc: 'Bleu marine, grand écusson « Since 1985 » brodé en relief orange sur la poitrine, poche kangourou, petit drapeau en bas.', prix: 50, unite: 'pièce', img: 'pull-marine-orange.jpg', w: 900, h: 985 },
+      { id: 'pull-rose', nom: 'Pull à capuche rose', desc: 'Vieux rose, grand écusson « Since 1985 » embossé ton sur ton sur la poitrine, poche kangourou, petit drapeau en bas.', prix: 50, unite: 'pièce', img: 'pull-rose.jpg', w: 900, h: 985 }
     ]
   },
   {

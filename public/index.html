@@ -193,7 +193,65 @@ a { color: inherit; text-underline-offset: .25em; }
 .bloc-credits h3 { font-size: .78rem; letter-spacing: .5em; color: var(--gris); font-weight: 400; margin-bottom: 26px; }
 .bloc-credits + .bloc-credits { margin-top: 10vh; }
 .ligne { display: grid; grid-template-columns: 1fr 1fr; gap: 0 36px; padding: 7px 0; }
-.ligne .nom { text-align: right; font: 400 .98rem/1.5 var(--texte); color: #d9d9dc; }
+.ligne .nom { text-align: right; font: 400 .98rem/1.5 var(--texte); color: #d9d9dc; background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline; text-decoration-color: transparent; text-underline-offset: .25em; transition: color .2s, text-decoration-color .2s; }
+.ligne .nom:hover, .ligne .nom:focus-visible { color: var(--blanc); text-decoration-color: currentColor; }
+
+/* Ouverture d'un produit : bouton sur l'écran du rayon. */
+.ouvrir-produit { position: absolute; inset: 0; z-index: 2; background: none; border: 0; padding: 0; cursor: zoom-in; }
+.ouvrir-produit .loupe { position: absolute; right: 18px; bottom: 16px; display: inline-flex; align-items: center; gap: 8px; padding: 9px 12px;
+  font: 400 .58rem/1 var(--titre); letter-spacing: .22em; text-transform: uppercase; color: var(--blanc);
+  background: rgba(5,5,6,.7); border: 1px solid rgba(242,242,240,.25); opacity: .75; transition: opacity .25s, border-color .25s; }
+.ouvrir-produit .loupe svg { width: 14px; height: 14px; }
+.ouvrir-produit:hover .loupe, .ouvrir-produit:focus-visible .loupe { opacity: 1; border-color: var(--blanc); }
+.ouvrir-produit:focus-visible { outline-offset: -6px; }
+.sans-mouvement .ouvrir-produit { display: none; }
+.sans-mouvement .prise:not(.prise-bientot) img { cursor: zoom-in; }
+
+/* Fiche produit (fenêtre). */
+.fiche { width: min(1120px, calc(100vw - 32px)); max-height: calc(100svh - 32px); padding: 0; border: 1px solid var(--gris-fonce);
+  background: var(--ecran); color: var(--blanc); overflow: auto; overscroll-behavior: contain; }
+.fiche[open] { animation: fiche-entree .35s cubic-bezier(.2,.7,.2,1); }
+.fiche::backdrop { background: rgba(0,0,0,.82); backdrop-filter: blur(4px); }
+.fiche[open]::backdrop { animation: fiche-fond .35s ease; }
+@keyframes fiche-entree { from { opacity: 0; transform: translateY(18px) scale(.98); } }
+@keyframes fiche-fond { from { opacity: 0; } }
+.fiche-fermer { position: absolute; top: 10px; right: 10px; z-index: 2; width: 44px; height: 44px; display: grid; place-items: center;
+  background: rgba(5,5,6,.6); border: 1px solid #3a3a40; color: var(--blanc); cursor: pointer; }
+.fiche-fermer:hover { border-color: var(--blanc); }
+.fiche-fermer svg { width: 14px; height: 14px; }
+.fiche-corps { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); }
+.fiche-image { margin: 0; background: #000; display: grid; place-items: center; min-height: 100%; }
+.fiche-image img { width: 100%; height: auto; max-height: calc(100svh - 34px); object-fit: contain; }
+.fiche-texte { padding: clamp(28px, 4vw, 52px) clamp(22px, 3.4vw, 46px); display: flex; flex-direction: column; align-items: flex-start; }
+.fiche-rayon { font: 400 .62rem/1.5 var(--titre); letter-spacing: .4em; text-transform: uppercase; color: var(--gris); padding-right: 40px; }
+.fiche-texte h2 { margin-top: 14px; font-size: clamp(1.25rem, 2.4vw, 2rem); letter-spacing: .1em; }
+.fiche-desc { margin-top: 18px; color: #cfcfd2; }
+.fiche-prix { margin-top: 22px; }
+.fiche-prix .prix { font: 700 1.7rem/1 var(--titre); letter-spacing: .06em; font-variant-numeric: tabular-nums; }
+.fiche-prix .prix small { font: 500 .9rem/1 var(--texte); letter-spacing: 0; color: var(--gris); margin-left: 6px; }
+.fiche-prix .promo-fin { margin-top: 10px; font: 700 .62rem/1.4 var(--titre); letter-spacing: .24em; text-transform: uppercase; color: var(--rouge); }
+.fiche-commander { margin-top: 30px; }
+.fiche-note { margin-top: 12px; font-size: .85rem; color: var(--gris); }
+.fiche-nav { margin-top: auto; padding-top: 34px; display: flex; align-items: center; gap: 16px; font: 400 .7rem/1 var(--titre); letter-spacing: .3em; color: var(--gris); font-variant-numeric: tabular-nums; }
+.fiche-nav[hidden] { display: none; }
+.fiche-nav button { width: 44px; height: 44px; display: grid; place-items: center; background: none; border: 1px solid #3a3a40; color: var(--blanc); cursor: pointer; }
+.fiche-nav button:hover { border-color: var(--blanc); }
+.fiche-nav svg { width: 16px; height: 16px; }
+@media (max-width: 820px) {
+  .fiche { width: calc(100vw - 20px); max-height: calc(100svh - 20px); }
+  .fiche-corps { grid-template-columns: 1fr; }
+  .fiche-image img { max-height: 42svh; }
+  .fiche-texte { padding: 20px 20px 24px; }
+  .fiche-rayon { letter-spacing: .26em; }
+  .fiche-texte h2 { margin-top: 10px; }
+  .fiche-desc { margin-top: 12px; font-size: .95rem; }
+  .fiche-prix { margin-top: 16px; }
+  .fiche-prix .prix { font-size: 1.4rem; }
+  .fiche-commander { margin-top: 22px; }
+  .fiche-nav { padding-top: 24px; }
+  .ouvrir-produit .loupe { right: 10px; bottom: 10px; padding: 8px 9px; font-size: 0; gap: 0; }
+}
+@media (prefers-reduced-motion: reduce) { .fiche[open], .fiche[open]::backdrop { animation: none; } }
 .ligne .montant { text-align: left; font: 700 .95rem/1.6 var(--titre); letter-spacing: .1em; font-variant-numeric: tabular-nums; }
 .ligne .montant small { font: 400 .82rem/1 var(--texte); letter-spacing: 0; color: var(--gris); margin-left: 6px; }
 .fin .mention { margin-top: 18px; font-size: .82rem; color: var(--gris); }
@@ -341,6 +399,26 @@ a { color: inherit; text-underline-offset: .25em; }
   </section>
 </main>
 
+<dialog class="fiche" id="fiche" aria-labelledby="fiche-nom" data-lenis-prevent>
+  <button class="fiche-fermer" id="fiche-fermer" type="button" aria-label="Fermer"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M2 2l10 10M12 2L2 12"/></svg></button>
+  <div class="fiche-corps">
+    <figure class="fiche-image"><img id="fiche-img" src="data:," alt=""></figure>
+    <div class="fiche-texte">
+      <p class="fiche-rayon" id="fiche-rayon"></p>
+      <h2 id="fiche-nom"></h2>
+      <p class="fiche-desc" id="fiche-desc"></p>
+      <div class="fiche-prix" id="fiche-prix"></div>
+      <a class="bouton-blanc fiche-commander" id="fiche-commander" href="#">Commander par e-mail</a>
+      <p class="fiche-note">Règlement à la remise de votre commande.</p>
+      <div class="fiche-nav" id="fiche-nav">
+        <button type="button" id="fiche-prec" aria-label="Produit précédent"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M13 8H3M7 4L3 8l4 4"/></svg></button>
+        <span id="fiche-pos" aria-live="polite"></span>
+        <button type="button" id="fiche-suiv" aria-label="Produit suivant"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg></button>
+      </div>
+    </div>
+  </div>
+</dialog>
+
 <script src="/vendor/gsap.min.js"></script>
 <script src="/vendor/ScrollTrigger.min.js"></script>
 <script src="/vendor/lenis.min.js"></script>
@@ -396,7 +474,8 @@ a { color: inherit; text-underline-offset: .25em; }
       return '<li><button type="button" data-i="' + i + '" aria-label="' + p.nom + '"><img src="assets/produits/' + p.img + '" alt="" loading="lazy"></button></li>';
     }).join('') + '</ol>' : '';
     return avant + '<section class="plan" id="plan-' + c.id + '" data-n="' + n + '" aria-labelledby="t-' + c.id + '"><div class="cadre">' +
-      '<div class="ecran">' + prises + '</div>' +
+      '<div class="ecran">' + prises + (n ? '<button class="ouvrir-produit" type="button" data-rayon="' + c.id + '" aria-label="Voir le produit en grand"><span class="loupe" aria-hidden="true">' +
+        '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14M7 5v4M5 7h4"/></svg>Voir en grand</span></button>' : '') + '</div>' +
       '<div class="titre-plan">' + (c.groupe ? '<span class="rubrique">' + (GROUPES[c.groupe] || { titre: c.groupe }).titre + '</span>' : '') +
       '<h2 id="t-' + c.id + '">' + c.titre + '</h2>' + (n ? '<p>' + (n > 1 ? n + ' modèles' : '1 modèle') + '</p>' : '') + (c.groupe ? sousParties(c) : '') + '</div>' +
       '<div class="credits">' + credits + '</div>' + pell + (n > 1 ? '<p class="compteur" aria-hidden="true"></p>' : '') + '</div></section>';
@@ -443,7 +522,7 @@ a { color: inherit; text-underline-offset: .25em; }
   // Générique de fin
   document.getElementById('liste-credits').innerHTML = CATALOGUE.filter(function (c) { return c.produits.length; }).map(function (c) {
     return '<div class="bloc-credits"><h3>' + (c.groupe ? (GROUPES[c.groupe] || { titre: c.groupe }).titre + ' · ' : '') + c.titre + '</h3>' + c.produits.map(function (p) {
-      return '<div class="ligne" data-produit="' + p.id + '"><span class="nom">' + p.nom + '</span><span class="montant">' + Outils.prix(p.prix) + '<small>' + p.unite + '</small></span></div>';
+      return '<div class="ligne" data-produit="' + p.id + '"><button type="button" class="nom" data-rayon="' + c.id + '" data-i="' + c.produits.indexOf(p) + '">' + p.nom + '</button><span class="montant">' + Outils.prix(p.prix) + '<small>' + p.unite + '</small></span></div>';
     }).join('') + (c.alcool ? '<p class="mention">' + MENTION_ALCOOL + '</p>' : '') + '</div>';
   }).join('');
 
@@ -459,6 +538,57 @@ a { color: inherit; text-underline-offset: .25em; }
   gsap.ticker.add(function (t) { lenis.raf(t * 1000); });
   gsap.ticker.lagSmoothing(0);
   lenis.stop();
+  // Fiche produit : une fenêtre avec le produit seul (photo en grand, texte, prix, commande).
+  var fiche = document.getElementById('fiche'), ficheRayon = null, ficheI = 0;
+  function remplirFiche() {
+    var c = ficheRayon, p = c.produits[ficheI], n = c.produits.length;
+    var img = document.getElementById('fiche-img');
+    img.src = 'assets/produits/' + p.img; img.alt = p.nom; img.width = p.w; img.height = p.h;
+    document.getElementById('fiche-rayon').textContent = (c.groupe ? (GROUPES[c.groupe] || { titre: c.groupe }).titre + ' · ' : '') + c.titre;
+    document.getElementById('fiche-nom').textContent = p.nom;
+    document.getElementById('fiche-desc').textContent = p.desc;
+    // Le prix tel qu'affiché dans le rayon (prix barré et date de fin si une promo est en cours).
+    var prix = document.getElementById('fiche-prix'), credit = document.querySelector('.credit[data-produit="' + p.id + '"]');
+    prix.innerHTML = '';
+    if (credit) credit.querySelectorAll('.prix, .promo-fin').forEach(function (el) { prix.appendChild(el.cloneNode(true)); });
+    else prix.innerHTML = '<p class="prix">' + Outils.prix(p.prix) + '<small>' + p.unite + '</small></p>';
+    document.getElementById('fiche-commander').href = Outils.mailto('Bonjour,\nJe souhaite commander :\n- 1 × ' + p.nom + '\nPrécisions (taille, quantité…) : …\nNom : …\nMerci !');
+    document.getElementById('fiche-nav').hidden = n < 2;
+    document.getElementById('fiche-pos').textContent = (ficheI + 1) + ' / ' + n;
+  }
+  function ouvrirFiche(rayonId, i) {
+    var c = CATALOGUE.filter(function (r) { return r.id === rayonId; })[0];
+    if (!c || !c.produits[i]) return;
+    ficheRayon = c; ficheI = i; remplirFiche();
+    if (!fiche.open) { fiche.showModal(); lenis.stop(); }
+  }
+  function changerFiche(sens) {
+    var n = ficheRayon.produits.length; ficheI = (ficheI + sens + n) % n; remplirFiche();
+  }
+  document.getElementById('fiche-prec').addEventListener('click', function () { changerFiche(-1); });
+  document.getElementById('fiche-suiv').addEventListener('click', function () { changerFiche(1); });
+  document.getElementById('fiche-fermer').addEventListener('click', function () { fiche.close(); });
+  fiche.addEventListener('click', function (e) { if (e.target === fiche) fiche.close(); });   // clic à côté
+  fiche.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowLeft' && ficheRayon.produits.length > 1) { e.preventDefault(); changerFiche(-1); }
+    if (e.key === 'ArrowRight' && ficheRayon.produits.length > 1) { e.preventDefault(); changerFiche(1); }
+  });
+  fiche.addEventListener('close', function () { lenis.start(); });
+  document.addEventListener('click', function (e) {
+    if (!e.target.closest) return;
+    var b = e.target.closest('.ouvrir-produit, .ligne .nom');
+    if (b) {
+      if (b.dataset.i != null) return ouvrirFiche(b.dataset.rayon, +b.dataset.i);
+      // Écran d'un rayon : le produit à l'écran est la prise la plus visible.
+      var prises = b.parentNode.querySelectorAll('.prise'), k = 0, max = -1;
+      prises.forEach(function (pr, j) { var o = +getComputedStyle(pr).opacity; if (o > max) { max = o; k = j; } });
+      return ouvrirFiche(b.dataset.rayon, k);
+    }
+    // Sans animation, les photos sont les unes sous les autres : on ouvre celle qui est cliquée.
+    var pr = reduit && e.target.closest('.prise:not(.prise-bientot)');
+    if (pr) ouvrirFiche(pr.closest('.plan').id.replace('plan-', ''), [].indexOf.call(pr.parentNode.querySelectorAll('.prise'), pr));
+  });
+
   // Liens internes (y compris ceux ajoutés après coup, comme les affiches promo).
   document.addEventListener('click', function (e) {
     var a = e.target.closest && e.target.closest('a[href^="#"]'); if (!a) return;

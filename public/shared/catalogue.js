@@ -1,13 +1,35 @@
 // Catalogue GOST 31 : source unique des trois maquettes.
 // Textes et prix repris du site actuel (dépôt association-gost/GOST-31).
+// Un rayon peut appartenir à un groupe (champ « groupe ») : un seul onglet pour le groupe,
+// une page d'accueil qui présente ses sous-parties, puis chaque rayon comme d'habitude.
+// Les rayons restent séparés pour les promos et l'admin.
+window.GROUPES = {
+  textile: { titre: 'Textile', court: 'Textile', intro: 'Trois rayons à découvrir : t-shirts, pulls à capuche et doudoune sans manches.' }
+};
+
 window.CATALOGUE = [
   {
-    id: 'tshirts', titre: 'T-shirts', court: 'T-shirts',
+    id: 'tshirts', groupe: 'textile', titre: 'T-shirts', court: 'T-shirts',
     produits: [
       { id: 'tshirt-breacher', nom: 'T-shirt Breacher', desc: 'Sable, logo Breacher sur la poitrine et grand marquage vertical dans le dos.', prix: 15, unite: 'pièce', img: 'tshirt-breacher.jpg', w: 900, h: 600 },
       { id: 'tshirt-omega', nom: 'T-shirt Omega', desc: 'Sable, logo Omega sur la poitrine et grand marquage vertical dans le dos.', prix: 15, unite: 'pièce', img: 'tshirt-omega.jpg', w: 900, h: 600 },
       { id: 'tshirt-noir', nom: 'T-shirt noir camouflage', desc: 'Logo RAID camouflage gris sur la poitrine, grand sceau Police Nationale dans le dos.', prix: 15, unite: 'pièce', img: 'tshirt-noir.jpg', w: 900, h: 600 },
       { id: 'tshirt-sable', nom: 'T-shirt sable', desc: 'Écusson sur la poitrine, drapeau sur la manche, grand RAID noir dans le dos.', prix: 15, unite: 'pièce', img: 'tshirt-sable.jpg', w: 900, h: 600 }
+    ]
+  },
+  {
+    id: 'pulls', groupe: 'textile', titre: 'Pulls à capuche', court: 'Pulls',
+    produits: [
+      { id: 'pull-noir', nom: 'Pull à capuche noir', desc: 'Noir, grand écusson « Since 1985 » brodé ton sur ton sur la poitrine, poche kangourou.', prix: 50, unite: 'pièce', img: 'pull-noir.jpg', w: 900, h: 985 },
+      { id: 'pull-kaki', nom: 'Pull à capuche kaki', desc: 'Kaki, grand écusson « Since 1985 » brodé en noir sur la poitrine, poche kangourou.', prix: 50, unite: 'pièce', img: 'pull-kaki.jpg', w: 900, h: 985 },
+      { id: 'pull-marine-orange', nom: 'Pull à capuche marine et orange', desc: 'Bleu marine, grand écusson « Since 1985 » brodé en relief orange sur la poitrine, poche kangourou, petit drapeau en bas.', prix: 50, unite: 'pièce', img: 'pull-marine-orange.jpg', w: 900, h: 985 },
+      { id: 'pull-rose', nom: 'Pull à capuche rose', desc: 'Vieux rose, grand écusson « Since 1985 » embossé ton sur ton sur la poitrine, poche kangourou, petit drapeau en bas.', prix: 50, unite: 'pièce', img: 'pull-rose.jpg', w: 900, h: 985 }
+    ]
+  },
+  {
+    id: 'doudoune', groupe: 'textile', titre: 'Doudoune sans manches', court: 'Doudoune',
+    produits: [
+      { id: 'doudoune', nom: 'Doudoune sans manches', desc: 'Noire, col montant, zip central et poches zippées. Panthère brodée sur la poitrine.', prix: 50, unite: 'pièce', img: 'doudoune.jpg', w: 822, h: 900 }
     ]
   },
   {
@@ -18,21 +40,6 @@ window.CATALOGUE = [
       { id: 'casquette-kaki', nom: 'Casquette kaki RAID', desc: 'Kaki avec filet à l’arrière, RAID brodé en relief et petit drapeau sur la visière.', prix: 20, unite: 'pièce', img: 'casquette-kaki.jpg', w: 800, h: 800 },
       { id: 'casquette-marine', nom: 'Casquette marine', desc: 'Face bleu marine, visière grise, filet blanc, panthère brodée en gris clair.', prix: 20, unite: 'pièce', img: 'casquette-marine.jpg', w: 800, h: 800 },
       { id: 'casquette-rouge', nom: 'Casquette rouge et grise 31', desc: 'Face gris chiné, visière et bouton rouges, filet blanc à l’arrière, panthère, étoile et 31 brodés en noir.', prix: 20, unite: 'pièce', img: 'casquette-rouge.jpg', w: 800, h: 800 }
-    ]
-  },
-  {
-    id: 'pulls', titre: 'Pulls à capuche', court: 'Pulls',
-    produits: [
-      { id: 'pull-noir', nom: 'Pull à capuche noir', desc: 'Noir, grand écusson « Since 1985 » brodé ton sur ton sur la poitrine, poche kangourou.', prix: 50, unite: 'pièce', img: 'pull-noir.jpg', w: 900, h: 985 },
-      { id: 'pull-kaki', nom: 'Pull à capuche kaki', desc: 'Kaki, grand écusson « Since 1985 » brodé en noir sur la poitrine, poche kangourou.', prix: 50, unite: 'pièce', img: 'pull-kaki.jpg', w: 900, h: 985 },
-      { id: 'pull-marine-orange', nom: 'Pull à capuche marine et orange', desc: 'Bleu marine, grand écusson « Since 1985 » brodé en relief orange sur la poitrine, poche kangourou, petit drapeau en bas.', prix: 50, unite: 'pièce', img: 'pull-marine-orange.jpg', w: 900, h: 985 },
-      { id: 'pull-rose', nom: 'Pull à capuche rose', desc: 'Vieux rose, grand écusson « Since 1985 » embossé ton sur ton sur la poitrine, poche kangourou, petit drapeau en bas.', prix: 50, unite: 'pièce', img: 'pull-rose.jpg', w: 900, h: 985 }
-    ]
-  },
-  {
-    id: 'doudoune', titre: 'Doudoune sans manches', court: 'Doudoune',
-    produits: [
-      { id: 'doudoune', nom: 'Doudoune sans manches', desc: 'Noire, col montant, zip central et poches zippées. Panthère brodée sur la poitrine.', prix: 50, unite: 'pièce', img: 'doudoune.jpg', w: 822, h: 900 }
     ]
   },
   {

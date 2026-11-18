@@ -72,6 +72,29 @@ a { color: inherit; text-underline-offset: .25em; }
 .barre nav.deborde { padding: 0 18px;
   -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 18px, #000 calc(100% - 18px), transparent 100%);
           mask-image: linear-gradient(90deg, transparent 0, #000 18px, #000 calc(100% - 18px), transparent 100%); }
+/* Groupe de rayons (Textile) : page d'accueil, rubrique et sous-parties dans chaque plan. */
+.groupe { padding: 18vh var(--gouttiere) 14vh; text-align: center; }
+.groupe-sur { font: 400 .7rem/1.6 var(--titre); letter-spacing: .5em; text-transform: uppercase; color: var(--gris); }
+.groupe > h2 { margin-top: 14px; font-size: clamp(1.8rem, 5vw, 3.6rem); letter-spacing: .3em; padding-left: .3em; }
+.groupe-intro { margin: 18px auto 0; color: var(--gris); max-width: 46ch; text-wrap: balance; }
+.parties { margin: 8vh auto 0; max-width: 1180px; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 22px; text-align: left; }
+.partie { display: block; text-decoration: none; background: var(--ecran); border: 1px solid var(--gris-fonce); transition: border-color .3s, transform .3s; }
+.partie:hover, .partie:focus-visible { border-color: var(--blanc); transform: translateY(-4px); }
+.partie-image { display: block; aspect-ratio: 4 / 3; overflow: hidden; background: #000; }
+.partie-image img { width: 100%; height: 100%; object-fit: cover; object-position: center 30%; transition: transform .6s; }
+.partie:hover .partie-image img { transform: scale(1.04); }
+.partie-corps { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 18px 18px 20px; }
+.partie-nom { display: block; font: 700 1rem/1.25 var(--titre); letter-spacing: .12em; text-transform: uppercase; }
+.partie-info { display: block; margin-top: 8px; font-size: .9rem; color: var(--gris); font-variant-numeric: tabular-nums; }
+.partie-fleche { flex: 0 0 auto; width: 20px; height: 20px; color: var(--gris); transition: transform .3s, color .3s; }
+.partie:hover .partie-fleche { color: var(--blanc); transform: translateX(4px); }
+.titre-plan .rubrique { display: block; margin-bottom: 12px; font: 700 .62rem/1.4 var(--titre); letter-spacing: .45em; text-transform: uppercase; color: var(--gris); }
+.sous-parties { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+.sous-parties a { font: 400 .6rem/1 var(--titre); letter-spacing: .2em; text-transform: uppercase; text-decoration: none; color: #cfcfd2;
+  border: 1px solid #3a3a40; background: rgba(5,5,6,.65); padding: 11px 13px; min-height: 36px; display: inline-flex; align-items: center; transition: color .25s, border-color .25s, background .25s; }
+.sous-parties a:hover { color: var(--blanc); border-color: var(--gris); }
+.sous-parties a[aria-current="page"] { color: var(--noir); background: var(--blanc); border-color: var(--blanc); }
+@media (prefers-reduced-motion: reduce) { .partie, .partie:hover, .partie-image img, .partie-fleche { transition: none; transform: none !important; } }
 /* Rayon à venir : le logo en filigrane et « Bientôt disponible ». */
 .prise-bientot img { left: 0; right: 0; width: 100%; object-position: center; opacity: .1; -webkit-mask-image: none; mask-image: none; padding: 8% 0; }
 .barre nav a:hover, .barre nav a[aria-current="true"] { color: var(--blanc); }
@@ -218,6 +241,16 @@ a { color: inherit; text-underline-offset: .25em; }
   .titre-plan { top: 148px; max-width: none; right: var(--gouttiere); }
   .titre-plan h2 { font-size: 1.2rem; text-shadow: 0 1px 12px #000; }
   .titre-plan p { display: none; }
+  .titre-plan .rubrique { margin-bottom: 6px; font-size: .55rem; text-shadow: 0 1px 10px #000; }
+  .sous-parties { margin-top: 10px; gap: 6px; }
+  .sous-parties a { font-size: .55rem; letter-spacing: .14em; padding: 9px 10px; min-height: 32px; }
+  .groupe { padding: calc(136px + 6vh) var(--gouttiere) 10vh; }   /* sous la barre et sa bande de raccourcis */
+  .parties { grid-template-columns: 1fr; gap: 14px; }
+  .partie { display: grid; grid-template-columns: 112px 1fr; }
+  .partie-image { aspect-ratio: auto; height: 100%; min-height: 96px; }
+  .partie-corps { padding: 14px 14px 14px 16px; }
+  .partie-nom { font-size: .85rem; }
+  .partie-info { font-size: .85rem; margin-top: 6px; }
   .credits { left: var(--gouttiere); right: var(--gouttiere); width: auto; bottom: 92px; }
   .credit h3 { font-size: 1.15rem; margin-top: 10px; }
   .credit p.desc { font-size: .95rem; margin-top: 10px; }
@@ -301,9 +334,34 @@ a { color: inherit; text-underline-offset: .25em; }
   var reduit = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (reduit) document.documentElement.classList.add('sans-mouvement');
 
+  // Groupes de rayons (ex. Textile) : un onglet, une page d'accueil, puis chaque sous-partie.
+  var GROUPES = window.GROUPES || {};
+  function membres(g) { return CATALOGUE.filter(function (c) { return c.groupe === g; }); }
+  function vignette(c) { return c.produits[0] ? 'assets/produits/' + c.produits[0].img : ''; }
+  function accueilGroupe(g) {
+    var G = GROUPES[g] || { titre: g };
+    return '<section class="groupe" id="groupe-' + g + '" aria-labelledby="t-groupe-' + g + '">' +
+      '<p class="groupe-sur">Le rayon</p><h2 id="t-groupe-' + g + '">' + G.titre + '</h2>' + (G.intro ? '<p class="groupe-intro">' + G.intro + '</p>' : '') +
+      '<div class="parties">' + membres(g).map(function (c) {
+        var n = c.produits.length, min = Math.min.apply(null, c.produits.map(function (p) { return p.prix; }));
+        return '<a class="partie" href="#plan-' + c.id + '"><span class="partie-image">' + (n ? '<img src="' + vignette(c) + '" alt="" loading="lazy">' : '') + '</span>' +
+          '<span class="partie-corps"><span><span class="partie-nom">' + c.titre + '</span><span class="partie-info">' +
+          (n ? (n > 1 ? n + ' modèles' : '1 modèle') + ' · ' + (n > 1 ? 'dès ' : '') + Outils.prix(min) : 'Bientôt disponible') + '</span></span>' +
+          '<svg class="partie-fleche" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg></span></a>';
+      }).join('') + '</div></section>';
+  }
+  function sousParties(c) {
+    var G = GROUPES[c.groupe] || { titre: c.groupe };
+    return '<nav class="sous-parties" aria-label="Sous-parties du rayon ' + G.titre + '">' + membres(c.groupe).map(function (m) {
+      return '<a href="#plan-' + m.id + '"' + (m.id === c.id ? ' aria-current="page"' : '') + '>' + m.court + '</a>';
+    }).join('') + '</nav>';
+  }
+
   // Les plans
+  var dejaVu = {};
   document.getElementById('plans').innerHTML = CATALOGUE.map(function (c) {
-    var n = c.produits.length;
+    var n = c.produits.length, avant = '';
+    if (c.groupe && !dejaVu[c.groupe]) { dejaVu[c.groupe] = true; avant = accueilGroupe(c.groupe); }
     var prises = c.produits.map(function (p, i) {
       return '<figure class="prise"><img src="assets/produits/' + p.img + '" alt="' + p.nom + '" width="' + p.w + '" height="' + p.h + '"' + (i ? ' loading="lazy"' : '') + '></figure>';
     }).join('');
@@ -318,14 +376,24 @@ a { color: inherit; text-underline-offset: .25em; }
     var pell = n > 1 ? '<ol class="pellicule" aria-label="Produits">' + c.produits.map(function (p, i) {
       return '<li><button type="button" data-i="' + i + '" aria-label="' + p.nom + '"><img src="assets/produits/' + p.img + '" alt="" loading="lazy"></button></li>';
     }).join('') + '</ol>' : '';
-    return '<section class="plan" id="plan-' + c.id + '" data-n="' + n + '" aria-labelledby="t-' + c.id + '"><div class="cadre">' +
+    return avant + '<section class="plan" id="plan-' + c.id + '" data-n="' + n + '" aria-labelledby="t-' + c.id + '"><div class="cadre">' +
       '<div class="ecran">' + prises + '</div>' +
-      '<div class="titre-plan"><h2 id="t-' + c.id + '">' + c.titre + '</h2>' + (n ? '<p>' + (n > 1 ? n + ' modèles' : '1 modèle') + '</p>' : '') + '</div>' +
+      '<div class="titre-plan">' + (c.groupe ? '<span class="rubrique">' + (GROUPES[c.groupe] || { titre: c.groupe }).titre + '</span>' : '') +
+      '<h2 id="t-' + c.id + '">' + c.titre + '</h2>' + (n ? '<p>' + (n > 1 ? n + ' modèles' : '1 modèle') + '</p>' : '') + (c.groupe ? sousParties(c) : '') + '</div>' +
       '<div class="credits">' + credits + '</div>' + pell + (n > 1 ? '<p class="compteur" aria-hidden="true"></p>' : '') + '</div></section>';
   }).join('');
-  document.getElementById('nav').innerHTML = CATALOGUE.map(function (c) { return '<a href="#plan-' + c.id + '">' + c.court + '</a>'; }).join('') + '<a href="#catalogue">Catalogue</a>';
-  document.getElementById('raccourcis').innerHTML = CATALOGUE.map(function (c) {
-    return '<a href="#plan-' + c.id + '"><span class="vignette">' + (c.produits[0] ? '<img src="assets/produits/' + c.produits[0].img + '" alt="" loading="lazy">' : '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="2.5" y="2.5" width="11" height="11"/></svg>') + '</span><span>' + c.court + '</span></a>';
+  // lienDe : section (plan, accueil de groupe…) → onglet qui doit s'allumer quand on y est.
+  var onglets = [], lienDe = {};
+  CATALOGUE.forEach(function (c) {
+    if (c.groupe) {
+      var id = 'groupe-' + c.groupe;
+      if (!lienDe[id]) { lienDe[id] = id; onglets.push({ id: id, court: (GROUPES[c.groupe] || { court: c.groupe }).court, img: vignette(c) }); }
+      lienDe['plan-' + c.id] = id;
+    } else { lienDe['plan-' + c.id] = 'plan-' + c.id; onglets.push({ id: 'plan-' + c.id, court: c.court, img: vignette(c) }); }
+  });
+  document.getElementById('nav').innerHTML = onglets.map(function (o) { return '<a href="#' + o.id + '">' + o.court + '</a>'; }).join('') + '<a href="#catalogue">Catalogue</a>';
+  document.getElementById('raccourcis').innerHTML = onglets.map(function (o) {
+    return '<a href="#' + o.id + '"><span class="vignette">' + (o.img ? '<img src="' + o.img + '" alt="" loading="lazy">' : '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="2.5" y="2.5" width="11" height="11"/></svg>') + '</span><span>' + o.court + '</span></a>';
   }).join('') + '<a href="#catalogue"><span class="vignette"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M2 4h12M2 8h12M2 12h8"/></svg></span><span>Tous les prix</span></a>';
   var bande = document.getElementById('raccourcis');
   // Barre d'ordinateur : fondu sur les bords seulement si les onglets débordent.
@@ -337,8 +405,14 @@ a { color: inherit; text-underline-offset: .25em; }
   window.addEventListener('resize', majDebord);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(majDebord);
   majDebord();
-  function rayonActif(id, actif) {
+  var actives = {};
+  function rayonActif(section, actif) {
+    var id = lienDe[section] || section;
+    actives[id] = actives[id] || {};
+    if (actif) actives[id][section] = true; else delete actives[id][section];
+    actif = Object.keys(actives[id]).length > 0;
     document.querySelectorAll('#nav a[href="#' + id + '"], #raccourcis a[href="#' + id + '"]').forEach(function (a) {
+      if ((a.getAttribute('aria-current') === 'true') === actif) return;
       a.setAttribute('aria-current', actif ? 'true' : 'false');
       var rang = a.parentNode;   // la bande du téléphone, ou la barre d'ordinateur quand elle défile
       if (actif && rang.offsetParent && rang.scrollWidth > rang.clientWidth) {
@@ -349,7 +423,7 @@ a { color: inherit; text-underline-offset: .25em; }
 
   // Générique de fin
   document.getElementById('liste-credits').innerHTML = CATALOGUE.filter(function (c) { return c.produits.length; }).map(function (c) {
-    return '<div class="bloc-credits"><h3>' + c.titre + '</h3>' + c.produits.map(function (p) {
+    return '<div class="bloc-credits"><h3>' + (c.groupe ? (GROUPES[c.groupe] || { titre: c.groupe }).titre + ' · ' : '') + c.titre + '</h3>' + c.produits.map(function (p) {
       return '<div class="ligne" data-produit="' + p.id + '"><span class="nom">' + p.nom + '</span><span class="montant">' + Outils.prix(p.prix) + '<small>' + p.unite + '</small></span></div>';
     }).join('') + (c.alcool ? '<p class="mention">' + MENTION_ALCOOL + '</p>' : '') + '</div>';
   }).join('');
@@ -548,6 +622,10 @@ a { color: inherit; text-underline-offset: .25em; }
       });
     });
     ScrollTrigger.create({ trigger: plan, start: 'top 50%', end: 'bottom 50%', onToggle: function (s) { rayonActif(plan.id, s.isActive); } });
+  });
+  document.querySelectorAll('.groupe').forEach(function (g) {
+    ScrollTrigger.create({ trigger: g, start: 'top 50%', end: 'bottom 50%', onToggle: function (s) { rayonActif(g.id, s.isActive); } });
+    gsap.fromTo(g.querySelectorAll('.partie'), { opacity: 0, y: 40 }, { opacity: 1, y: 0, stagger: 0.08, duration: 0.8, ease: 'power3.out', scrollTrigger: { trigger: g, start: 'top 70%' } });
   });
   ScrollTrigger.create({ trigger: '#catalogue', start: 'top 50%', end: 'bottom 50%', onToggle: function (s) { rayonActif('catalogue', s.isActive); } });
 

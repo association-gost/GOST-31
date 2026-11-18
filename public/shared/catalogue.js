@@ -65,7 +65,11 @@ window.CATALOGUE = [
       { id: 'mug-noir-brillant', nom: 'Mug noir brillant RAID', desc: 'Céramique noire brillante, grand sceau RAID Police Nationale argenté.', prix: 10, unite: 'pièce', img: 'mug-noir-brillant.jpg', w: 900, h: 900 },
       { id: 'mug-blanc', nom: 'Mug blanc RAID', desc: 'Céramique blanche brillante, grand sceau RAID Police Nationale en noir, filets bleu et rouge.', prix: 10, unite: 'pièce', img: 'mug-blanc.jpg', w: 900, h: 900 }
     ]
-  }
+  },
+  // Rayons à venir : sans produit, ils affichent « Bientôt disponible » (pas de ligne au catalogue).
+  { id: 'verrerie', titre: 'Verrerie', court: 'Verrerie', produits: [] },
+  { id: 'ecussons', titre: 'Écussons', court: 'Écussons', produits: [] },
+  { id: 'porte-cles', titre: 'Porte-clés', court: 'Porte-clés', produits: [] }
 ];
 
 window.COMMANDE = {

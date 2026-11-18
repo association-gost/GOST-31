@@ -64,14 +64,16 @@ a { color: inherit; text-underline-offset: .25em; }
 .barre nav { display: flex; gap: clamp(12px, 1.3vw, 20px); margin-left: auto; min-width: 0; }
 .barre nav a { white-space: nowrap; text-decoration: none; font: 400 .66rem/1 var(--titre); letter-spacing: .24em; text-transform: uppercase; color: var(--gris); padding: 8px 0; }
 .barre-commander { flex-shrink: 0; white-space: nowrap; }
-/* Écran moyen : les onglets se resserrent, puis la barre défile si elle ne tient toujours pas. */
+/* Les onglets se resserrent sur écran moyen ; s'ils ne tiennent toujours pas, la barre défile
+   (fondu sur les bords seulement quand elle déborde, classe posée par le script). */
 @media (max-width: 1500px) { .barre { gap: 20px; } .barre nav a { letter-spacing: .16em; } }
-@media (max-width: 1300px) {
-  .barre nav:not(.raccourcis) { overflow-x: auto; scrollbar-width: none; overscroll-behavior-x: contain;
-    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 18px, #000 calc(100% - 18px), transparent 100%);
-            mask-image: linear-gradient(90deg, transparent 0, #000 18px, #000 calc(100% - 18px), transparent 100%); padding: 0 18px; }
-  .barre nav:not(.raccourcis)::-webkit-scrollbar { display: none; }
-}
+.barre nav:not(.raccourcis) { overflow-x: auto; scrollbar-width: none; overscroll-behavior-x: contain; }
+.barre nav:not(.raccourcis)::-webkit-scrollbar { display: none; }
+.barre nav.deborde { padding: 0 18px;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 18px, #000 calc(100% - 18px), transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0, #000 18px, #000 calc(100% - 18px), transparent 100%); }
+/* Rayon à venir : le logo en filigrane et « Bientôt disponible ». */
+.prise-bientot img { left: 0; right: 0; width: 100%; object-position: center; opacity: .1; -webkit-mask-image: none; mask-image: none; padding: 8% 0; }
 .barre nav a:hover, .barre nav a[aria-current="true"] { color: var(--blanc); }
 .barre-commander { font: 700 .7rem/1 var(--titre); letter-spacing: .26em; text-transform: uppercase; text-decoration: none; color: var(--noir); background: var(--blanc); padding: 13px 16px; }
 .barre-commander:hover { background: var(--rouge); color: #fff; }
@@ -298,6 +300,10 @@ a { color: inherit; text-underline-offset: .25em; }
       return '<div class="credit" data-produit="' + p.id + '"><p class="role">' + (n > 1 ? 'Dans le rôle' : 'Seul en scène') + '</p><h3>' + p.nom + '</h3><p class="desc">' + p.desc + '</p>' +
         '<p class="prix">' + Outils.prix(p.prix) + '<small>' + p.unite + '</small></p>' + (c.alcool ? '<p class="mention">' + MENTION_ALCOOL + '</p>' : '') + '</div>';
     }).join('');
+    if (!n) {   // rayon à venir
+      prises = '<figure class="prise prise-bientot"><img src="assets/logo-clair-hd.png" alt="" loading="lazy"></figure>';
+      credits = '<div class="credit"><p class="role">Prochainement</p><h3>Bientôt disponible</h3><p class="desc">Les modèles arrivent très vite. En attendant, écrivez-nous pour en savoir plus.</p></div>';
+    }
     var pell = n > 1 ? '<ol class="pellicule" aria-label="Produits">' + c.produits.map(function (p, i) {
       return '<li><button type="button" data-i="' + i + '" aria-label="' + p.nom + '"><img src="assets/produits/' + p.img + '" alt="" loading="lazy"></button></li>';
     }).join('') + '</ol>' : '';
@@ -311,6 +317,15 @@ a { color: inherit; text-underline-offset: .25em; }
     return '<a href="#plan-' + c.id + '"><span class="vignette">' + (c.produits[0] ? '<img src="assets/produits/' + c.produits[0].img + '" alt="" loading="lazy">' : '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="2.5" y="2.5" width="11" height="11"/></svg>') + '</span><span>' + c.court + '</span></a>';
   }).join('') + '<a href="#catalogue"><span class="vignette"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M2 4h12M2 8h12M2 12h8"/></svg></span><span>Tous les prix</span></a>';
   var bande = document.getElementById('raccourcis');
+  // Barre d'ordinateur : fondu sur les bords seulement si les onglets débordent.
+  var navOrdi = document.getElementById('nav');
+  function majDebord() {
+    navOrdi.classList.remove('deborde');
+    navOrdi.classList.toggle('deborde', navOrdi.scrollWidth > navOrdi.clientWidth + 1);
+  }
+  window.addEventListener('resize', majDebord);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(majDebord);
+  majDebord();
   function rayonActif(id, actif) {
     document.querySelectorAll('#nav a[href="#' + id + '"], #raccourcis a[href="#' + id + '"]').forEach(function (a) {
       a.setAttribute('aria-current', actif ? 'true' : 'false');

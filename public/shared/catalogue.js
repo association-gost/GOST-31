@@ -60,7 +60,10 @@ window.CATALOGUE = [
     id: 'mugs', titre: 'Mugs', court: 'Mugs',
     produits: [
       { id: 'mug-inox', nom: 'Mug inox RAID', desc: 'Acier inoxydable brossé, logo RAID gravé, anse en acier.', prix: 10, unite: 'pièce', img: 'mug-inox.jpg', w: 900, h: 900 },
-      { id: 'mug-noir', nom: 'Mug noir RAID', desc: 'Noir mat à l’intérieur rouge, grand sceau RAID Police Nationale en blanc.', prix: 10, unite: 'pièce', img: 'mug-noir.jpg', w: 900, h: 900 }
+      { id: 'mug-noir', nom: 'Mug noir et rouge RAID', desc: 'Noir mat à l’intérieur rouge, grand sceau RAID Police Nationale en blanc.', prix: 10, unite: 'pièce', img: 'mug-noir.jpg', w: 900, h: 900 },
+      { id: 'mug-noir-relief', nom: 'Mug noir et rouge en relief', desc: 'Noir mat à l’intérieur rouge, sceau RAID Police Nationale en relief ton sur ton, filets bleu et rouge.', prix: 10, unite: 'pièce', img: 'mug-noir-relief.jpg', w: 900, h: 900 },
+      { id: 'mug-noir-brillant', nom: 'Mug noir brillant RAID', desc: 'Céramique noire brillante, grand sceau RAID Police Nationale argenté.', prix: 10, unite: 'pièce', img: 'mug-noir-brillant.jpg', w: 900, h: 900 },
+      { id: 'mug-blanc', nom: 'Mug blanc RAID', desc: 'Céramique blanche brillante, grand sceau RAID Police Nationale en noir, filets bleu et rouge.', prix: 10, unite: 'pièce', img: 'mug-blanc.jpg', w: 900, h: 900 }
     ]
   }
 ];

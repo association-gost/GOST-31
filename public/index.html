@@ -61,7 +61,7 @@ a { color: inherit; text-underline-offset: .25em; }
 .barre { position: fixed; top: var(--bandeau); left: 0; right: 0; z-index: 30; display: flex; align-items: center; gap: 26px; padding: 16px var(--gouttiere); background: linear-gradient(180deg, rgba(5,5,6,.92), rgba(5,5,6,0)); transform: translateY(calc(-110% - var(--bandeau))); transition: transform .7s cubic-bezier(.2,.7,.2,1), top .3s; }
 .barre.visible { transform: none; }
 
-/* Banderole « site en construction », au-dessus de la barre (refermable). */
+/* Banderole « site en construction », au-dessus de la barre (la croix la masque jusqu'au prochain chargement). */
 .bandeau { position: fixed; top: 0; left: 0; right: 0; z-index: 31; display: flex; align-items: center; justify-content: center; gap: 14px;
   padding: 9px calc(var(--gouttiere) + 36px) 9px var(--gouttiere); background: var(--rouge); color: #fff; text-align: center;
   font: 500 .88rem/1.4 var(--texte); transform: translateY(-110%); transition: transform .7s cubic-bezier(.2,.7,.2,1); }
@@ -594,18 +594,16 @@ a { color: inherit; text-underline-offset: .25em; }
     window.__tl = tl; return tl;
   }
 
-  // Banderole « en construction » : sa hauteur décale la barre et les plans ; refermée, elle ne revient qu'à la visite suivante.
+  // Banderole « en construction » : sa hauteur décale la barre et les plans ; la croix la masque pour la page en cours seulement.
   var bandeau = document.getElementById('bandeau');
   function majBandeau() {
     document.documentElement.style.setProperty('--bandeau', bandeau.hidden ? '0px' : bandeau.offsetHeight + 'px');
   }
-  try { if (sessionStorage.getItem('bandeau-ferme')) bandeau.hidden = true; } catch (e) {}
   majBandeau();
   window.addEventListener('resize', majBandeau);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { majBandeau(); ScrollTrigger.refresh(); });
   document.getElementById('bandeau-fermer').addEventListener('click', function () {
     bandeau.hidden = true; majBandeau(); ScrollTrigger.refresh();
-    try { sessionStorage.setItem('bandeau-ferme', '1'); } catch (e) {}
   });
   function ouvrirSite() { bandeau.classList.add('visible'); document.getElementById('barre').classList.add('visible'); lenis.start(); ScrollTrigger.refresh(); }
   var videoPrete = new Promise(function (ok) {

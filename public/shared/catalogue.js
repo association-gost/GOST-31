@@ -39,7 +39,8 @@ window.CATALOGUE = [
       { id: 'casquette-grise', nom: 'Casquette grise 31', desc: 'Face gris chiné, filet noir à l’arrière, panthère et 31 brodés en noir.', prix: 20, unite: 'pièce', img: 'casquette-grise.jpg', w: 796, h: 800 },
       { id: 'casquette-kaki', nom: 'Casquette kaki RAID', desc: 'Kaki avec filet à l’arrière, RAID brodé en relief et petit drapeau sur la visière.', prix: 20, unite: 'pièce', img: 'casquette-kaki.jpg', w: 800, h: 800 },
       { id: 'casquette-marine', nom: 'Casquette marine', desc: 'Face bleu marine, visière grise, filet blanc, panthère brodée en gris clair.', prix: 20, unite: 'pièce', img: 'casquette-marine.jpg', w: 800, h: 800 },
-      { id: 'casquette-rouge', nom: 'Casquette rouge et grise 31', desc: 'Face gris chiné, visière et bouton rouges, filet blanc à l’arrière, panthère, étoile et 31 brodés en noir.', prix: 20, unite: 'pièce', img: 'casquette-rouge.jpg', w: 800, h: 800 }
+      { id: 'casquette-rouge', nom: 'Casquette rouge et grise 31', desc: 'Face gris chiné, visière et bouton rouges, filet blanc à l’arrière, panthère, étoile et 31 brodés en noir.', prix: 20, unite: 'pièce', img: 'casquette-rouge.jpg', w: 800, h: 800 },
+      { id: 'casquette-noire', nom: 'Casquette noire RAID', desc: 'Entièrement noire avec filet à l’arrière, RAID brodé en relief ton sur ton, petit drapeau tricolore sur la visière.', prix: 20, unite: 'pièce', img: 'casquette-noire.jpg', w: 800, h: 800 }
     ]
   },
   {

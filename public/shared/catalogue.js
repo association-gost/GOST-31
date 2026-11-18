@@ -33,9 +33,11 @@ window.CATALOGUE = [
     ]
   },
   {
-    id: 'serviette', titre: 'Serviette de bain', court: 'Serviette',
+    id: 'serviette', titre: 'Serviettes et foutas', court: 'Serviettes & foutas',
     produits: [
-      { id: 'serviette', nom: 'Serviette de bain', desc: 'Éponge anthracite avec grand logo en relief. Dimensions : 190 × 90 cm.', prix: 30, unite: 'pièce', img: 'serviette.jpg', w: 870, h: 900 }
+      { id: 'serviette', nom: 'Serviette de bain', desc: 'Éponge anthracite avec grand logo en relief. Dimensions : 190 × 90 cm.', prix: 30, unite: 'pièce', img: 'serviette.jpg', w: 870, h: 900 },
+      { id: 'fouta-grise', nom: 'Fouta grise', desc: 'Gris clair à fines rayures grises, franges nouées. Logo R à la croix occitane et filets tricolores brodé.', prix: 12, unite: 'pièce', img: 'fouta-grise.jpg', w: 900, h: 900 },
+      { id: 'fouta-bleue', nom: 'Fouta bleue', desc: 'Blanche à rayures bleu ciel, franges nouées. Logo R à la croix occitane et filets tricolores brodé.', prix: 12, unite: 'pièce', img: 'fouta-bleue.jpg', w: 900, h: 900 }
     ]
   },
   {

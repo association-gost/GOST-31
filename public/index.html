@@ -21,6 +21,7 @@
   --titre: "Syncopate", "Arial", sans-serif;
   --texte: "Hanken Grotesk", system-ui, sans-serif;
   --gouttiere: clamp(16px, 4vw, 56px);
+  --bandeau: 0px;   /* hauteur de la banderole « en construction » (mesurée par le script) */
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
@@ -57,8 +58,25 @@ a { color: inherit; text-underline-offset: .25em; }
 .eclair { position: fixed; inset: 0; z-index: 20; background: var(--rouge); opacity: 0; pointer-events: none; mix-blend-mode: screen; }
 
 /* Barre */
-.barre { position: fixed; top: 0; left: 0; right: 0; z-index: 30; display: flex; align-items: center; gap: 26px; padding: 16px var(--gouttiere); background: linear-gradient(180deg, rgba(5,5,6,.92), rgba(5,5,6,0)); transform: translateY(-110%); transition: transform .7s cubic-bezier(.2,.7,.2,1); }
+.barre { position: fixed; top: var(--bandeau); left: 0; right: 0; z-index: 30; display: flex; align-items: center; gap: 26px; padding: 16px var(--gouttiere); background: linear-gradient(180deg, rgba(5,5,6,.92), rgba(5,5,6,0)); transform: translateY(calc(-110% - var(--bandeau))); transition: transform .7s cubic-bezier(.2,.7,.2,1), top .3s; }
 .barre.visible { transform: none; }
+
+/* Banderole « site en construction », au-dessus de la barre (refermable). */
+.bandeau { position: fixed; top: 0; left: 0; right: 0; z-index: 31; display: flex; align-items: center; justify-content: center; gap: 14px;
+  padding: 9px calc(var(--gouttiere) + 36px) 9px var(--gouttiere); background: var(--rouge); color: #fff; text-align: center;
+  font: 500 .88rem/1.4 var(--texte); transform: translateY(-110%); transition: transform .7s cubic-bezier(.2,.7,.2,1); }
+.bandeau.visible { transform: none; }
+.bandeau[hidden] { display: none; }
+.bandeau p { margin: 0; text-wrap: balance; }
+.bandeau strong { font: 700 .68rem/1 var(--titre); letter-spacing: .22em; text-transform: uppercase; margin-right: 10px; white-space: nowrap; }
+.bandeau a { color: #fff; font-weight: 600; text-decoration: underline; text-decoration-thickness: 1px; }
+.bandeau a:hover { text-decoration-thickness: 2px; }
+.bandeau-fermer { position: absolute; right: calc(var(--gouttiere) - 10px); top: 50%; transform: translateY(-50%); width: 40px; height: 40px; display: grid; place-items: center;
+  background: none; border: 0; color: #fff; cursor: pointer; opacity: .85; }
+.bandeau-fermer:hover { opacity: 1; }
+.bandeau-fermer svg { width: 14px; height: 14px; }
+.bandeau :focus-visible { outline-color: #fff; }
+@media (prefers-reduced-motion: reduce) { .bandeau, .barre { transition: none; } }
 .barre-logo { display: flex; align-items: center; gap: 12px; flex-shrink: 0; white-space: nowrap; text-decoration: none; font: 700 .85rem/1 var(--titre); letter-spacing: .3em; }
 .barre-logo img { width: 38px; height: auto; }
 .barre nav { display: flex; gap: clamp(12px, 1.3vw, 20px); margin-left: auto; min-width: 0; }
@@ -128,12 +146,12 @@ a { color: inherit; text-underline-offset: .25em; }
 /* Les plans : un par catégorie */
 .plan { position: relative; }
 .cadre { position: relative; height: 100vh; height: 100svh; overflow: hidden; }
-.ecran { position: absolute; left: 0; right: 0; top: 11vh; bottom: 11vh; background: var(--ecran); clip-path: inset(50% 0 50% 0); }
+.ecran { position: absolute; left: 0; right: 0; top: max(11vh, calc(var(--bandeau) + 78px)); bottom: 11vh; background: var(--ecran); clip-path: inset(50% 0 50% 0); }
 .prise { position: absolute; inset: 0; margin: 0; opacity: 0; }
 .prise img { position: absolute; right: 4vw; top: 0; height: 100%; width: 62vw; object-fit: contain; object-position: right center;
   -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 22%, #000 88%, transparent 100%);
           mask-image: linear-gradient(90deg, transparent 0%, #000 22%, #000 88%, transparent 100%); }
-.titre-plan { position: absolute; left: var(--gouttiere); top: calc(11vh + 34px); max-width: 40vw; }
+.titre-plan { position: absolute; left: var(--gouttiere); top: calc(max(11vh, calc(var(--bandeau) + 78px)) + 34px); max-width: 40vw; }
 .titre-plan h2 { font-size: clamp(1.5rem, 3.4vw, 3rem); letter-spacing: .2em; }
 .titre-plan p { margin-top: 12px; font: 400 .68rem/1.6 var(--titre); letter-spacing: .3em; text-transform: uppercase; color: var(--gris); }
 .credits { position: absolute; left: var(--gouttiere); bottom: calc(11vh + 40px); width: min(38vw, 520px); }
@@ -236,15 +254,17 @@ a { color: inherit; text-underline-offset: .25em; }
   .raccourcis a[aria-current="true"] { color: var(--blanc); border-color: var(--blanc); background: #16161a; }
   .raccourcis a[aria-current="true"] .vignette img { opacity: 1; }
   .raccourcis a:active { background: #1d1d22; }
-  .ecran { top: 136px; bottom: auto; height: min(40vh, calc(100svh - 136px - 300px)); }
+  .ecran { top: calc(136px + var(--bandeau)); bottom: auto; height: min(40vh, calc(100svh - 136px - var(--bandeau) - 300px)); }
   .prise img { left: 0; right: 0; width: 100%; object-position: center; -webkit-mask-image: linear-gradient(180deg, transparent, #000 14%, #000 86%, transparent); mask-image: linear-gradient(180deg, transparent, #000 14%, #000 86%, transparent); }
-  .titre-plan { top: 148px; max-width: none; right: var(--gouttiere); }
+  .titre-plan { top: calc(148px + var(--bandeau)); max-width: none; right: var(--gouttiere); }
   .titre-plan h2 { font-size: 1.2rem; text-shadow: 0 1px 12px #000; }
   .titre-plan p { display: none; }
+  .bandeau { font-size: .78rem; padding: 8px 48px 8px var(--gouttiere); text-align: left; justify-content: flex-start; }
+  .bandeau strong { display: block; margin: 0 0 4px; font-size: .6rem; }
   .titre-plan .rubrique { margin-bottom: 6px; font-size: .55rem; text-shadow: 0 1px 10px #000; }
   .sous-parties { margin-top: 10px; gap: 6px; }
   .sous-parties a { font-size: .55rem; letter-spacing: .14em; padding: 9px 10px; min-height: 32px; }
-  .groupe { padding: calc(136px + 6vh) var(--gouttiere) 10vh; }   /* sous la barre et sa bande de raccourcis */
+  .groupe { padding: calc(136px + var(--bandeau) + 6vh) var(--gouttiere) 10vh; }   /* sous la barre et sa bande de raccourcis */
   .parties { grid-template-columns: 1fr; gap: 14px; }
   .partie { display: grid; grid-template-columns: 112px 1fr; }
   .partie-image { aspect-ratio: auto; height: 100%; min-height: 96px; }
@@ -267,6 +287,10 @@ a { color: inherit; text-underline-offset: .25em; }
 <button class="bouton-passer" id="passer" type="button" hidden>Passer l’intro</button>
 <div class="eclair" id="eclair" aria-hidden="true"></div>
 
+<div class="bandeau" id="bandeau" role="region" aria-label="Information">
+  <p><strong>Site en construction</strong> De nombreux articles vont être ajoutés très bientôt. N’hésitez pas à <a href="#commander">nous contacter</a> pour plus d’informations.</p>
+  <button class="bandeau-fermer" id="bandeau-fermer" type="button" aria-label="Fermer ce message"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M2 2l10 10M12 2L2 12"/></svg></button>
+</div>
 <header class="barre" id="barre">
   <a class="barre-logo" href="#haut" aria-label="GOST 31, retour en haut"><img src="assets/logo-clair.png" alt="" width="38" height="38">GOST 31</a>
   <nav aria-label="Catégories" id="nav"></nav>
@@ -570,7 +594,20 @@ a { color: inherit; text-underline-offset: .25em; }
     window.__tl = tl; return tl;
   }
 
-  function ouvrirSite() { document.getElementById('barre').classList.add('visible'); lenis.start(); ScrollTrigger.refresh(); }
+  // Banderole « en construction » : sa hauteur décale la barre et les plans ; refermée, elle ne revient qu'à la visite suivante.
+  var bandeau = document.getElementById('bandeau');
+  function majBandeau() {
+    document.documentElement.style.setProperty('--bandeau', bandeau.hidden ? '0px' : bandeau.offsetHeight + 'px');
+  }
+  try { if (sessionStorage.getItem('bandeau-ferme')) bandeau.hidden = true; } catch (e) {}
+  majBandeau();
+  window.addEventListener('resize', majBandeau);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { majBandeau(); ScrollTrigger.refresh(); });
+  document.getElementById('bandeau-fermer').addEventListener('click', function () {
+    bandeau.hidden = true; majBandeau(); ScrollTrigger.refresh();
+    try { sessionStorage.setItem('bandeau-ferme', '1'); } catch (e) {}
+  });
+  function ouvrirSite() { bandeau.classList.add('visible'); document.getElementById('barre').classList.add('visible'); lenis.start(); ScrollTrigger.refresh(); }
   var videoPrete = new Promise(function (ok) {
     if (video.readyState >= 3) ok(); else { video.addEventListener('canplaythrough', ok, { once: true }); video.addEventListener('error', ok, { once: true }); setTimeout(ok, 5000); }
   });

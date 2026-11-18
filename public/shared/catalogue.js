@@ -50,10 +50,6 @@ window.CATALOGUE = [
       { id: 'montre-acier', nom: 'Montre acier RAID', desc: 'Boîtier et bracelet en acier, cadran blanc au logo RAID, index tricolores et date. Étanche 10 ATM.', prix: 60, unite: 'pièce', img: 'montre-acier.jpg', w: 900, h: 900 },
       { id: 'montre-chrono-noire', nom: 'Chronographe noir RAID', desc: 'Boîtier noir à lunette graduée, cadran noir et blanc à trois compteurs, logo RAID, bracelet silicone perforé.', prix: 60, unite: 'pièce', img: 'montre-chrono-noire.jpg', w: 900, h: 900 }
     ]
-  },
-  {
-    id: 'cave', titre: 'La cave', court: 'La cave',
-    produits: []
   }
 ];
 

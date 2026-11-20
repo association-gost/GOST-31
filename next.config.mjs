@@ -1,9 +1,8 @@
 const isDev = process.env.NODE_ENV !== 'production';
 
 /**
- * Politiques de sécurité de contenu. Tout vient du site lui-même (GSAP et Lenis
- * sont hébergés dans public/vendor) ; seules les polices Google sont externes,
- * et uniquement sur la vitrine.
+ * Politiques de sécurité de contenu. Tout vient du site lui-même : GSAP et Lenis
+ * dans public/vendor, polices dans public/assets/polices (plus de Google Fonts).
  *  - 'unsafe-inline' (scripts) : script de la vitrine et amorçage de Next.js ;
  *  - 'unsafe-eval' : rechargement à chaud, en développement seulement.
  */
@@ -20,8 +19,8 @@ const commun = [
 ];
 const cspVitrine = [
   ...commun,
-  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-  "font-src 'self' https://fonts.gstatic.com",
+  "style-src 'self' 'unsafe-inline'",
+  "font-src 'self'",
 ].join('; ');
 const cspAdmin = [...commun, "style-src 'self' 'unsafe-inline'", "font-src 'self'"].join('; ');
 
@@ -52,7 +51,12 @@ const nextConfig = {
 
   async rewrites() {
     // La vitrine reste la page statique d'origine.
-    return { beforeFiles: [{ source: '/', destination: '/index.html' }] };
+    return {
+      beforeFiles: [
+        { source: '/', destination: '/index.html' },
+        { source: '/mentions-legales', destination: '/mentions-legales.html' },
+      ],
+    };
   },
 
   async headers() {

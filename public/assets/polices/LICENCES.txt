@@ -1,0 +1,8 @@
+Polices téléchargées depuis Google Fonts le 20/11/2026 (jeu de caractères latin, format woff2) :
+
+- Hanken Grotesk (Hanken Design Co.) : SIL Open Font License 1.1
+  https://fonts.google.com/specimen/Hanken+Grotesk/license
+- Syncopate (Astigmatic) : Apache License 2.0
+  https://fonts.google.com/specimen/Syncopate/license
+
+Ces deux licences autorisent l'hébergement et la diffusion des fichiers avec le site.

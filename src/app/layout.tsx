@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: 'GOST 31 · Admin',
   robots: { index: false, follow: false },
   referrer: 'no-referrer',
-  icons: { icon: '/assets/logo-clair.png' },
+  icons: { icon: '/assets/favicon.png', apple: '/assets/apple-touch-icon.png' },
 };
 export const viewport: Viewport = { themeColor: '#050506', width: 'device-width', initialScale: 1 };
 

@@ -1,0 +1,24 @@
+/* Polices hébergées sur le site (plus d'appel à Google Fonts : l'adresse IP des visiteurs
+   n'est transmise à personne). Jeu de caractères latin, qui couvre le français.
+   Hanken Grotesk est une police variable : un seul fichier pour les graisses 400 à 600. */
+@font-face {
+  font-family: "Hanken Grotesk";
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url("hanken-grotesk-latin.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Syncopate";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("syncopate-400-latin.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Syncopate";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("syncopate-700-latin.woff2") format("woff2");
+}
